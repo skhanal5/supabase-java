@@ -4,32 +4,68 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
+public class SupabaseClient {
 
-@Value
-public class SupabaseClient<T> {
+    @NonNull
     WebClient client;
 
+    @NonNull
     ObjectMapper mapper;
 
-    Class<T> responseType;
-
-    private SupabaseClient(ObjectMapper mapper, String serviceKey, @NonNull String databaseUrl, Class<T> responseType) {
-        this.client = WebClient.builder()
-                .baseUrl(databaseUrl)
-                .defaultHeader("apikey", serviceKey)
-                .defaultHeader("Authorization", serviceKey)
-                .build();
-        this.mapper = mapper;
-        this.responseType = responseType;
+    private SupabaseClient(WebClient client) {
+        this.client = client;
+        this.mapper = new ObjectMapper();
     }
 
+    private SupabaseClient(WebClient client, ObjectMapper mapper) {
+       this.client = client;
+       this.mapper = mapper;
+    }
 
-    public static <T>  SupabaseClient<T> newInstance(ObjectMapper mapper,
-                                                String serviceKey,
-                                                String databaseUrl,
-                                                Class<T> responseType) {
-       return new SupabaseClient<>(mapper, serviceKey, databaseUrl, responseType);
+    public <T> T selectAll(String table, Class<T> responseType) {
+        return client
+                .get()
+                .uri(uriBuilder ->  {
+                    var uri = uriBuilder
+                            .path(table)
+                            .queryParam("select", "*")
+                            .build();
+                    System.out.println(uri.toString());
+                    return uri;
+                })
+                .retrieve()
+                .bodyToMono(responseType)
+                .block();
+    }
 
+    public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
+        var client = WebClient
+                .builder()
+                .baseUrl(databaseUrl)
+                .defaultHeader("apikey", serviceKey)
+                .defaultHeader("Authorization", "Bearer " + serviceKey)
+                .build();
+
+        return new SupabaseClient(client);
+    }
+
+    public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey, @NonNull ObjectMapper mapper) {
+        var client = WebClient
+                .builder()
+                .baseUrl(databaseUrl)
+                .defaultHeader("apikey", serviceKey)
+                .defaultHeader("Authorization", "Bearer " + serviceKey)
+                .build();
+
+       return new SupabaseClient(client, mapper);
+    }
+
+    public static SupabaseClient newInstance(@NonNull WebClient client, @NonNull ObjectMapper mapper) {
+        return new SupabaseClient(client, mapper);
+    }
+
+    public static SupabaseClient newInstance(@NonNull WebClient client) {
+        return new SupabaseClient(client);
     }
 
 }
