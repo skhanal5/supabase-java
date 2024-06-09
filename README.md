@@ -5,8 +5,11 @@ This project establishes a Java based client to interact with a Supabase databas
 java client, so I tried to make one instead. My goal is to make a client that is based
 in Spring as well as one that is non-Spring based for learning purposes.
 
+### Project Specifications
+- Java 21
+
 ### Supabase Java Spring
-A Supabase client that is native to the Spring framework. It uses WebClient under
+A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API. 
 
 #### Supported Operations
