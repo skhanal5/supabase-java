@@ -2,7 +2,16 @@ package com.skhanal5.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.function.Consumer;
+
+
+/**
+ * Represents a client to interact with the Supabase database.
+ */
 
 public class SupabaseClient {
 
@@ -22,17 +31,21 @@ public class SupabaseClient {
        this.mapper = mapper;
     }
 
-    public <T> T selectAll(String table, Class<T> responseType) {
+    public <T> T executeQuery(Query query, Class<T> responseType) {
+        var queryParams = Query.convertToQueryParams(query);
+        var additionalHeaders = Query.buildAdditionalHeaders(query);
+        return this.queryDatabaseAPI(query.getTable(),queryParams, additionalHeaders, responseType);
+    }
+
+    private <T> T queryDatabaseAPI(String table, MultiValueMap<String, String> queryParameters,
+                                   Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
         return client
                 .get()
-                .uri(uriBuilder ->  {
-                    var uri = uriBuilder
-                            .path(table)
-                            .queryParam("select", "*")
-                            .build();
-                    System.out.println(uri.toString());
-                    return uri;
-                })
+                .uri(uriBuilder -> uriBuilder
+                        .path(table)
+                        .queryParams(queryParameters)
+                        .build())
+                .headers(headersConsumer)
                 .retrieve()
                 .bodyToMono(responseType)
                 .block();
@@ -67,5 +80,4 @@ public class SupabaseClient {
     public static SupabaseClient newInstance(@NonNull WebClient client) {
         return new SupabaseClient(client);
     }
-
 }
