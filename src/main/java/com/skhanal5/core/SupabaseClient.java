@@ -37,32 +37,14 @@ public class SupabaseClient {
         return this.queryDatabaseAPI(query.getTable(),queryParams, additionalHeaders, responseType);
     }
 
-//    public <T> T selectAll(String table, Class<T> responseType) {
-//        return this.select(table, "*", responseType);
-//    }
-//
-//    public <T> T select(String table, String column, Class<T> responseType) {
-//        var queryParams = CollectionUtils.toMultiValueMap(Map.of("select", List.of(column)));
-//        return this.queryDatabaseAPI(table, queryParams, responseType);
-//    }
-//
-//    public <T> T select(String table, List<String> columns, Class<T> responseType) {
-//        var queryParams = CollectionUtils.toMultiValueMap(Map.of("select", columns));
-//        return this.queryDatabaseAPI(table, queryParams, responseType);
-//    }
-
     private <T> T queryDatabaseAPI(String table, MultiValueMap<String, String> queryParameters,
                                    Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
         return client
                 .get()
-                .uri(uriBuilder ->  {
-                    var uri = uriBuilder
-                            .path(table)
-                            .queryParams(queryParameters)
-                            .build();
-                    System.out.println(uri.toString());
-                    return uri;
-                })
+                .uri(uriBuilder -> uriBuilder
+                        .path(table)
+                        .queryParams(queryParameters)
+                        .build())
                 .headers(headersConsumer)
                 .retrieve()
                 .bodyToMono(responseType)
