@@ -16,6 +16,13 @@
     <properties>
         <java.version>21</java.version>
     </properties>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/skhanal5/supabase-java</url>
+        </repository>
+    </distributionManagement>
     <dependencies>
 
         <!-- Spring dependencies -->
