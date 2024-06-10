@@ -5,16 +5,12 @@ This project establishes a Java based client to interact with a Supabase databas
 java client, so I tried to make one instead. My goal is to make a client that is based
 in Spring as well as one that is non-Spring based for learning purposes.
 
-### Project Specifications
+### Project Specs
 - Java 21
 
 ### Supabase Java Spring
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
-the hood to interact with the Supabase database API. 
-
-#### Supported Operations
-
-`selectAll(String tableName, Class<T> responseClass)`
+the hood to interact with the Supabase database API.
 
 #### Usage
 
@@ -24,16 +20,27 @@ dashboard along with the service key.
 ```dtd
     var client = SupabaseClient.newInstance("https://abcdefghijklmnop.supabase.co/rest/v1/", SERVICE_KEY);
 ```
-From there, you can query your database tables like so:
-
+From there, you can query your database tables by building a Query.
 ```dtd
-    var response = client.selectAll("doctors", String.class));
-    System.out.println(response);
+    var query = new Query
+        .QueryBuilder()
+        .from("doctors")
+        .select("*")
+        .build();
 ```
 
-This will transform the JSON output into a String.
+This query is the SQL equivalent of selecting all fields
+from the `doctors` table.
+
+Lastly, you can execute the query and invoke the Supabase database API
+by using `executeQuery(Query query, Class<T> responseClass)`. The `responseClass` parameter
+is used to deserialize the JSON response into the corresponding POJO.
+
+For example:
 ```dtd
-    [{"id":"12345-6789","foo":"bar"}]
+    var response = client.executeQuery(query, String.class);
+    System.out.println(response);
+    //output: [{"id":"12345-6789","foo":"bar"}]
 ```
 
 ##### Aside: Supabase Responses
