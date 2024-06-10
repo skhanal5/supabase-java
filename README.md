@@ -43,7 +43,7 @@ For example:
     //output: [{"id":"12345-6789","foo":"bar"}]
 ```
 
-##### Aside: Supabase Responses
+#### Aside: Supabase Responses
 As you can see, the underlying Supabase database produces a list of objects where each object
 corresponds to a row of your table. The key-value pairs inside of that object map to the values under each
 column defined in your table.
