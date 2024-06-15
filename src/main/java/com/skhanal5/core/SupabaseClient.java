@@ -21,6 +21,8 @@ public class SupabaseClient {
     @NonNull
     ObjectMapper mapper;
 
+    private static final String ENDPOINT_PATH = "/rest/v1/";
+
     private SupabaseClient(WebClient client) {
         this.client = client;
         this.mapper = new ObjectMapper();
@@ -52,9 +54,10 @@ public class SupabaseClient {
     }
 
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
+        var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
                 .builder()
-                .baseUrl(databaseUrl)
+                .baseUrl(baseUrl)
                 .defaultHeader("apikey", serviceKey)
                 .defaultHeader("Authorization", "Bearer " + serviceKey)
                 .build();
@@ -63,9 +66,10 @@ public class SupabaseClient {
     }
 
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey, @NonNull ObjectMapper mapper) {
+        var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
                 .builder()
-                .baseUrl(databaseUrl)
+                .baseUrl(baseUrl)
                 .defaultHeader("apikey", serviceKey)
                 .defaultHeader("Authorization", "Bearer " + serviceKey)
                 .build();
@@ -79,5 +83,11 @@ public class SupabaseClient {
 
     public static SupabaseClient newInstance(@NonNull WebClient client) {
         return new SupabaseClient(client);
+    }
+
+    public static void main(String[]args) {
+        var client = SupabaseClient.newInstance("https://qhjkbcklyrcbpegzuxhf.supabase.co", "");
+        var query = new Query.QueryBuilder().from("doctors").select("speciality", "phone_number").build();
+        System.out.println(client.executeQuery(query, String.class));
     }
 }

@@ -12,14 +12,17 @@ in Spring as well as one that is non-Spring based for learning purposes.
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API.
 
-#### Usage
+#### Initialization
 
 The easiest way of initalizing a SupabaseClient is by passing in the base URL of your Supabase database from your
 dashboard along with the service key.
 
 ```dtd
-    var client = SupabaseClient.newInstance("https://abcdefghijklmnop.supabase.co/rest/v1/", SERVICE_KEY);
+    var client = SupabaseClient.newInstance("https://abcdefghijklmnop.supabase.co", SERVICE_KEY);
 ```
+
+#### Building a Query
+
 From there, you can query your database tables by building a Query.
 ```dtd
     var query = new Query
@@ -31,6 +34,8 @@ From there, you can query your database tables by building a Query.
 
 This query is the SQL equivalent of selecting all fields
 from the `doctors` table.
+
+#### Executing a Query
 
 Lastly, you can execute the query and invoke the Supabase database API
 by using `executeQuery(Query query, Class<T> responseClass)`. The `responseClass` parameter
@@ -53,3 +58,21 @@ So the response above, would correspond to the table below:
 |   | id (varchar) | foo (varchar) |
 |---|--------------|---------------|
 | 1 | 12345-6789   | bar           |
+
+#### Supported Query Operations
+
+```dtd
+    // Read all rows
+    var query = new Query
+        .QueryBuilder()
+        .from("doctors")
+        .select("*")
+        .build();
+
+    // selecting multiple columns
+        var query = new Query
+        .QueryBuilder()
+        .from("doctors")
+        .select("id", "foo")
+        .build();
+```
