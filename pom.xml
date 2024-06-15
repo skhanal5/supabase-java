@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.skhanal5</groupId>
     <artifactId>supabase-spring</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>supabase-spring</name>
-    <description>spring supabase client</description>
+    <description>A Supabase client based in Spring</description>
     <properties>
         <java.version>21</java.version>
     </properties>
