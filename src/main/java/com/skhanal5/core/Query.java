@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 @Value
@@ -54,51 +55,51 @@ public class Query {
         }
 
         public QueryBuilder equals(String column, String value) {
-            this.filterData.put("equals", Map.of(column, value));
+            this.filterData.put("eq.", Map.of(column, value));
             return this;
         }
 
         public QueryBuilder greaterThan(String column, int value) {
-            this.filterData.put("greaterThan", Map.of(column, value));
+            this.filterData.put("gt.", Map.of(column, value));
             return this;
         }
 
         public QueryBuilder lessThan(String column, int value) {
-            this.filterData.put("lessThan", Map.of(column, value));
+            this.filterData.put("lt.", Map.of(column, value));
             return this;
         }
 
-        public QueryBuilder greaterThanEquals(String column, int value) {
-            this.filterData.put("greaterThanEquals", Map.of(column, value));
+        public QueryBuilder greaterThanOrEquals(String column, int value) {
+            this.filterData.put("gte.", Map.of(column, value));
             return this;
         }
 
-        public QueryBuilder lessThanEquals(String column, int value) {
-            this.filterData.put("lessThanEquals", Map.of(column, value));
+        public QueryBuilder lessThanOrEquals(String column, int value) {
+            this.filterData.put("lte.", Map.of(column, value));
             return this;
         }
-        public QueryBuilder like(String column, String value) {
-            this.filterData.put("like", Map.of(column, value));
+        public QueryBuilder like(String column, String pattern) {
+            this.filterData.put("like.", Map.of(column, pattern));
             return this;
         }
 
-        public QueryBuilder iLike(String column, String value) {
-            this.filterData.put("iLike", Map.of(column, value));
+        public QueryBuilder ilike(String column, String pattern) {
+            this.filterData.put("ilike.", Map.of(column, pattern));
             return this;
         }
 
         public QueryBuilder is(String column, Optional<Boolean> value) {
-            this.filterData.put("is", Map.of(column, value));
+            this.filterData.put("is.", Map.of(column, value));
             return this;
         }
 
         public QueryBuilder in(String column, List<String> values) {
-            this.filterData.put("in", Map.of(column, values));
+            this.filterData.put("in.", Map.of(column, values));
             return this;
         }
 
-        public QueryBuilder notEqual(String column, String value) {
-            this.filterData.put("notEqual", Map.of(column, value));
+        public QueryBuilder notEquals(String column, String value) {
+            this.filterData.put("neq.", Map.of(column, value));
             return this;
         }
 
@@ -116,26 +117,22 @@ public class Query {
     }
 
     private static void addFiltersOntoQueryParams(LinkedHashMap<String, List<String>> queryParams, Query query) {
-        var eqsOp = query.getFromFilter("equals");
-        eqsOp.ifPresent(e -> {
-            var entrySet = e.entrySet().iterator().next();
-            queryParams.put(entrySet.getKey(), List.of("eq." + entrySet.getValue()));
-        });
-
-        var gtOp = query.getFromFilter("greaterThan");
-        gtOp.ifPresent(e -> {
-            var entrySet = e.entrySet().iterator().next();
-            queryParams.put(entrySet.getKey(), List.of("gt." + entrySet.getValue()));
-        });
-    }
-
-    private Optional<Map<String, Object>> getFromFilter(String key) {
-        return this.filter.flatMap(filterValue -> {
-            if (filterValue.get(key) == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(filterValue.get(key));
-            }
+        System.out.println(query.getFilter());
+        var filterMap = query.getFilter();
+        filterMap.ifPresent(filters -> {
+            filters.forEach((filterType,filterColumnAndValue) -> {
+                Entry<String, Object> columnToFilterValue = filterColumnAndValue.entrySet().iterator().next();
+                var filterColumn = columnToFilterValue.getKey();
+                var filterValue = columnToFilterValue.getValue();
+                var filterValueStr = filterValue.toString();
+                if (filterValue instanceof List<?>) {
+                    List<String> list = (List<String>) filterValue;
+                    var stringifyList = String.join(",", list);
+                    filterValueStr = "(" + stringifyList + ")";
+                }
+                System.out.println(filterValueStr);
+                queryParams.put(filterColumn, List.of(filterType + filterValueStr));
+            });
         });
     }
 

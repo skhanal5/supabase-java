@@ -1,18 +1,18 @@
 # supabase-java
 
-### About
+## About
 This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a native
 java client, so I tried to make one instead. My goal is to make a client that is based
 in Spring as well as one that is non-Spring based for learning purposes.
 
-### Project Specs
+## Project Specs
 - Java 21
 
-### Supabase Java Spring
+## Supabase Java Spring
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API.
 
-#### Initialization
+### Initialization
 
 The easiest way of initalizing a SupabaseClient is by passing in the base URL of your Supabase database from your
 dashboard along with the service key.
@@ -21,7 +21,7 @@ dashboard along with the service key.
     var client = SupabaseClient.newInstance("https://abcdefghijklmnop.supabase.co", SERVICE_KEY);
 ```
 
-#### Building a Query
+### Building a Query
 
 From there, you can query your database tables by building a Query.
 ```dtd
@@ -35,7 +35,7 @@ From there, you can query your database tables by building a Query.
 This query is the SQL equivalent of selecting all fields
 from the `doctors` table.
 
-#### Executing a Query
+### Executing a Query
 
 Lastly, you can execute the query and invoke the Supabase database API
 by using `executeQuery(Query query, Class<T> responseClass)`. The `responseClass` parameter
@@ -59,20 +59,51 @@ So the response above, would correspond to the table below:
 |---|--------------|---------------|
 | 1 | 12345-6789   | bar           |
 
-#### Supported Query Operations
+### Query Filters
+
+You can include a Filter in your query to refine your search. Here are the following filters that are supported:
+
+`equals(String column, String value)`
+Match only rows where column is equal to value.
+
+`notEquals(String column, String value)`
+Match only rows where column is not equal to value.
+
+`greaterThan(String column, int value)`
+Match only rows where column is greater than value.
+
+`greaterThanOrEquals(String column, int value)`
+Match only rows where column is greater than or equal to value.
+
+`lessThan(String column, int value)`
+Match only rows where column is less than value.
+
+`lessThanOrEquals(String column, int value)`
+Match only rows where column is less than or equal to value.
+
+`in(String column, List<String> values`
+Match only rows where column contains every element appearing in value.
+
+`like(String column, String pattern)`
+Match only rows where column matches pattern case-sensitively.
+
+`ilike(String column, String pattern)`
+Match only rows where column matches pattern case-insensitively.
+
+#### Query Filter Usage
 
 ```dtd
-    // Read all rows
-    var query = new Query
-        .QueryBuilder()
-        .from("doctors")
-        .select("*")
-        .build();
-
-    // selecting multiple columns
-        var query = new Query
-        .QueryBuilder()
-        .from("doctors")
-        .select("id", "foo")
-        .build();
+    var query = new Query.QueryBuilder()
+            .from("doctors")
+            .select("*")
+            .equals("specialty", "Internal Medicine")
+            .greaterThan("years_of_experience", 2)
+            .greaterThanOrEquals("years_of_experience", 5)
+            .lessThan("distance", 2)
+            .lessThanOrEquals("rating", 2)
+            .in("state",List.of("Virginia", "Maryland"))
+            .like("full_name", "%John Doe%")
+            .ilike("phone_number", "%fakenumber%")
+            .notEquals("full_name", "null")
+            .build();
 ```

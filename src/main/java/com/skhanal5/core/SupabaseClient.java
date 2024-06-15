@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 
@@ -43,10 +44,14 @@ public class SupabaseClient {
                                    Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
         return client
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(table)
-                        .queryParams(queryParameters)
-                        .build())
+                .uri(uriBuilder -> {
+                   var uri =  uriBuilder
+                            .path(table)
+                            .queryParams(queryParameters)
+                            .build();
+                   System.out.println(uri);
+                   return uri;
+                })
                 .headers(headersConsumer)
                 .retrieve()
                 .bodyToMono(responseType)
@@ -83,11 +88,5 @@ public class SupabaseClient {
 
     public static SupabaseClient newInstance(@NonNull WebClient client) {
         return new SupabaseClient(client);
-    }
-
-    public static void main(String[]args) {
-        var client = SupabaseClient.newInstance("https://qhjkbcklyrcbpegzuxhf.supabase.co", "");
-        var query = new Query.QueryBuilder().from("doctors").select("speciality", "phone_number").build();
-        System.out.println(client.executeQuery(query, String.class));
     }
 }
