@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 
@@ -20,6 +21,8 @@ public class SupabaseClient {
 
     @NonNull
     ObjectMapper mapper;
+
+    private static final String ENDPOINT_PATH = "/rest/v1/";
 
     private SupabaseClient(WebClient client) {
         this.client = client;
@@ -41,10 +44,14 @@ public class SupabaseClient {
                                    Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
         return client
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(table)
-                        .queryParams(queryParameters)
-                        .build())
+                .uri(uriBuilder -> {
+                   var uri =  uriBuilder
+                            .path(table)
+                            .queryParams(queryParameters)
+                            .build();
+                   System.out.println(uri);
+                   return uri;
+                })
                 .headers(headersConsumer)
                 .retrieve()
                 .bodyToMono(responseType)
@@ -52,9 +59,10 @@ public class SupabaseClient {
     }
 
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
+        var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
                 .builder()
-                .baseUrl(databaseUrl)
+                .baseUrl(baseUrl)
                 .defaultHeader("apikey", serviceKey)
                 .defaultHeader("Authorization", "Bearer " + serviceKey)
                 .build();
@@ -63,9 +71,10 @@ public class SupabaseClient {
     }
 
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey, @NonNull ObjectMapper mapper) {
+        var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
                 .builder()
-                .baseUrl(databaseUrl)
+                .baseUrl(baseUrl)
                 .defaultHeader("apikey", serviceKey)
                 .defaultHeader("Authorization", "Bearer " + serviceKey)
                 .build();
