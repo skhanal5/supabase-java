@@ -1,4 +1,4 @@
-package com.skhanal5.core;
+package com.skhanal5.core.query;
 
 class Pagination {
     int start;

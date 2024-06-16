@@ -1,12 +1,18 @@
 package com.skhanal5.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skhanal5.core.query.Filter;
+import com.skhanal5.core.query.InsertQuery;
+import com.skhanal5.core.query.SelectQuery;
+import com.skhanal5.core.query.UpdateQuery;
 import lombok.*;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 
@@ -34,24 +40,77 @@ public class SupabaseClient {
        this.mapper = mapper;
     }
 
-    public <T> T executeQuery(Query query, Class<T> responseType) {
-        var queryParams = Query.convertToQueryParams(query);
-        var additionalHeaders = Query.buildAdditionalHeaders(query);
-        return this.queryDatabaseAPI(query.getTable(),queryParams, additionalHeaders, responseType);
+    public <T> T executeQuery(UpdateQuery query, Class<T> responseType) {
+        var requestBody = query.getValuesToUpdate();
+        var headers = query.addHeaderValues();
+        var queryParams = query.convertToQueryParams();
+        return this.updateToDB(query.getTable(), headers, queryParams, requestBody, responseType);
     }
 
-    private <T> T queryDatabaseAPI(String table, MultiValueMap<String, String> queryParameters,
-                                   Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
+    public <T> T executeQuery(InsertQuery query, Class<T> responseType) {
+        var requestBody = query.getValuesToInsert();
+        var additionalHeaders = query.addHeaderValues();
+        return this.insertToDB(query.getTable(), requestBody, additionalHeaders, responseType);
+    }
+
+    public <T> T executeQuery(SelectQuery query, Class<T> responseType) {
+        var queryParams = query.convertToQueryParams();
+        var additionalHeaders = query.addHeaderValues();
+        return this.selectToDB(query.getTable(),queryParams, additionalHeaders, responseType);
+    }
+
+    private <T> T updateToDB(String table,
+                             Consumer<HttpHeaders> headers,
+                             MultiValueMap<String, String> queryParameters,
+                             List<Map<String, Object>> requestBody,
+                             Class<T> responseType) {
         return client
-                .get()
+                .patch()
                 .uri(uriBuilder -> {
-                   var uri =  uriBuilder
+                    var uri =  uriBuilder
                             .path(table)
                             .queryParams(queryParameters)
                             .build();
-                   System.out.println(uri);
-                   return uri;
+                    System.out.println(uri);
+                    return uri;
                 })
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(responseType)
+                .block();
+    }
+
+    private <T> T insertToDB(String table,
+                             List<Map<String, Object>> requestBody, Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
+        return client
+                .post()
+                .uri(uriBuilder -> {
+                    var uri =  uriBuilder
+                            .path(table)
+                            .build();
+                    System.out.println(uri);
+                    return uri;
+                })
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headersConsumer)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(responseType)
+                .block();
+    }
+
+    private <T> T selectToDB(String table,
+                             MultiValueMap<String, String> queryParameters,
+                             Consumer<HttpHeaders> headersConsumer,
+                             Class<T> responseType) {
+        return client
+                .get()
+                .uri(uriBuilder ->  uriBuilder
+                            .path(table)
+                            .queryParams(queryParameters)
+                            .build())
                 .headers(headersConsumer)
                 .retrieve()
                 .bodyToMono(responseType)

@@ -1,16 +1,18 @@
 # supabase-java
 
 ## About
-This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a native
-java client, so I tried to make one instead. My goal is to make a client that is based
-in Spring as well as one that is non-Spring based for learning purposes.
+This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a
+Java based library for its database, so I tried to make one instead.
 
-## Project Specs
-- Java 21
+### Supabase Java Native (*To be developed*)
+A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of 
+Apache HTTPClient to interact with the Supabase database API. 
 
-## Supabase Java Spring
+### Supabase Java Spring (*In development*)
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API.
+
+## Quick Start
 
 ### Initialization
 
@@ -23,10 +25,10 @@ dashboard along with the service key.
 
 ### Building a Query
 
-From there, you can query your database tables by building a Query.
+From there, you can query your database tables by building a query. 
 ```dtd
-    var query = new Query
-        .QueryBuilder()
+    var query = new SelectQuery
+        .SelectQueryBuilder()
         .from("doctors")
         .select("*")
         .build();
@@ -58,6 +60,14 @@ So the response above, would correspond to the table below:
 |   | id (varchar) | foo (varchar) |
 |---|--------------|---------------|
 | 1 | 12345-6789   | bar           |
+
+## Queries
+
+### Types of Queries
+
+- SelectQuery
+- InsertQuery
+- UpdateQuery
 
 ### Query Filters
 
@@ -93,9 +103,7 @@ Match only rows where column matches pattern case-insensitively.
 #### Query Filter Usage
 
 ```dtd
-    var query = new Query.QueryBuilder()
-            .from("doctors")
-            .select("*")
+    var filter = new Filter.FilterBuilder()
             .equals("specialty", "Internal Medicine")
             .greaterThan("years_of_experience", 2)
             .greaterThanOrEquals("years_of_experience", 5)
@@ -106,4 +114,13 @@ Match only rows where column matches pattern case-insensitively.
             .ilike("phone_number", "%fakenumber%")
             .notEquals("full_name", "null")
             .build();
+```
+
+Filters are supported for SearchQuery, UpdateQuery, and DeleteQuery
+
+```dtd
+    var query = new SearchQuery.SearchQueryBuilder()
+            .from("doctors")
+            .select("*")
+            .filter(filter)
 ```
