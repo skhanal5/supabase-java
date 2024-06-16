@@ -21,7 +21,7 @@ public class DeleteQuery {
     @NonNull
     Filter filter;
 
-    boolean select;
+    Boolean select;
 
     private DeleteQuery(@NonNull String table,
                         @NonNull Boolean delete,
@@ -41,7 +41,7 @@ public class DeleteQuery {
 
         Filter filter;
 
-        boolean select = false;
+        Boolean select = false;
 
         public DeleteQueryBuilder from(String table) {
             this.table = table;

@@ -19,11 +19,11 @@ public class InsertQuery {
     @NonNull
     List<Map<String,Object>> valuesToInsert;
 
-    boolean select;
+    Boolean select;
 
     private InsertQuery(@NonNull String table,
                         @NonNull List<Map<String, Object>> valuesToInsert,
-                        boolean select) {
+                        Boolean select) {
         this.table = table;
         this.valuesToInsert = valuesToInsert;
         this.select = select;

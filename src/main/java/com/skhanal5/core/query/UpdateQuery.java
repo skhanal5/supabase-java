@@ -18,7 +18,7 @@ public class UpdateQuery {
     @NonNull
     List<Map<String,Object>> valuesToUpdate;
 
-    boolean select;
+    Boolean select;
 
     @NonNull
     Filter filter;
@@ -26,7 +26,7 @@ public class UpdateQuery {
     private UpdateQuery(@NonNull String table,
                         @NonNull List<Map<String, Object>> valuesToUpdate,
                         @NonNull Filter filter,
-                        boolean select) {
+                        Boolean select) {
         this.table = table;
         this.valuesToUpdate = valuesToUpdate;
         this.filter = filter;
