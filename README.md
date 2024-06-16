@@ -1,16 +1,18 @@
 # supabase-java
 
 ## About
-This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a native
-java client, so I tried to make one instead. My goal is to make a client that is based
-in Spring as well as one that is non-Spring based for learning purposes.
+This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a
+Java based library for its database, so I tried to make one instead.
 
-## Project Specs
-- Java 21
+### Supabase Java Native (*To be developed*)
+A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of 
+Apache HTTPClient to interact with the Supabase database API. 
 
-## Supabase Java Spring
+### Supabase Java Spring (*In development*)
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API.
+
+## Quick Start
 
 ### Initialization
 
@@ -23,10 +25,16 @@ dashboard along with the service key.
 
 ### Building a Query
 
-From there, you can query your database tables by building a Query.
+From there, you can invoke an operation on your database by building a query. Each operation
+has its own corresponding query object.
+
+#### SelectQuery
+
+To select a column in the table, you can use the `SelectQuery`. For example:
+
 ```dtd
-    var query = new Query
-        .QueryBuilder()
+    var query = new SelectQuery
+        .SelectQueryBuilder()
         .from("doctors")
         .select("*")
         .build();
@@ -35,13 +43,45 @@ From there, you can query your database tables by building a Query.
 This query is the SQL equivalent of selecting all fields
 from the `doctors` table.
 
+#### InsertQuery
+
+To insert a row or multiple rows into the table, you can use the `InsertQuery`.
+
+```dtd
+    var query = new InsertQuery
+        .InsertQueryBuilder()
+        .from("doctors")
+        .insert(Map.of("full_name", "John Doe")
+        .select()
+        .build();
+```
+
+Note: this method will return an empty string if you do not invoke select(). If select is invoked, it will
+return the new row/rows inserted in the table.
+
+#### UpdateQuery
+
+If you want to update a specific row, you can use the `UpdateQuery` along with a `Filter`. For more information on
+filtering, view the [section on using Filters](#Filters).
+
+```dtd
+    var query = new UpdateQuery
+        .UpdateQueryBuilder()
+        .from("doctors")
+        .update(Map.of("full_name", "Sarah Smith")
+        .filter(filter)
+        .build();
+```
+
+Note: In addition, this query also will need the `select()` method explicitly invoked to get a proper String response.
+
 ### Executing a Query
 
 Lastly, you can execute the query and invoke the Supabase database API
 by using `executeQuery(Query query, Class<T> responseClass)`. The `responseClass` parameter
 is used to deserialize the JSON response into the corresponding POJO.
 
-For example:
+If we wanted to execute the SearchQuery from above, we would do this:
 ```dtd
     var response = client.executeQuery(query, String.class);
     System.out.println(response);
@@ -59,7 +99,8 @@ So the response above, would correspond to the table below:
 |---|--------------|---------------|
 | 1 | 12345-6789   | bar           |
 
-### Query Filters
+
+### Filters
 
 You can include a Filter in your query to refine your search. Here are the following filters that are supported:
 
@@ -92,10 +133,10 @@ Match only rows where column matches pattern case-insensitively.
 
 #### Query Filter Usage
 
+Here is how you can use the FilterBuilder to build a Filter:
+
 ```dtd
-    var query = new Query.QueryBuilder()
-            .from("doctors")
-            .select("*")
+    var filter = new Filter.FilterBuilder()
             .equals("specialty", "Internal Medicine")
             .greaterThan("years_of_experience", 2)
             .greaterThanOrEquals("years_of_experience", 5)
@@ -106,4 +147,13 @@ Match only rows where column matches pattern case-insensitively.
             .ilike("phone_number", "%fakenumber%")
             .notEquals("full_name", "null")
             .build();
+```
+
+Note: Filters are supported for SearchQuery, UpdateQuery, and DeleteQuery
+
+```dtd
+    var query = new SearchQuery.SearchQueryBuilder()
+            .from("doctors")
+            .select("*")
+            .filter(filter)
 ```
