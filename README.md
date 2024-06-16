@@ -81,7 +81,7 @@ Lastly, you can execute the query and invoke the Supabase database API
 by using `executeQuery(Query query, Class<T> responseClass)`. The `responseClass` parameter
 is used to deserialize the JSON response into the corresponding POJO.
 
-For example:
+If we wanted to execute the SearchQuery from above, we would do this:
 ```dtd
     var response = client.executeQuery(query, String.class);
     System.out.println(response);
