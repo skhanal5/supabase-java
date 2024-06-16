@@ -5,7 +5,6 @@ import lombok.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +58,7 @@ public class InsertQuery {
         }
     }
 
-    public Consumer<HttpHeaders> addHeaderValues() {
+    public Consumer<HttpHeaders> addSelectHeader() {
         var headers = new HashMap<String, List<String>>();
         if (this.select) {
             headers.put("Prefer",List.of("return=representation")); //TODO: return only inserted values

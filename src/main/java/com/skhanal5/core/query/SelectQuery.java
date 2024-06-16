@@ -1,6 +1,5 @@
 package com.skhanal5.core.query;
 
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.http.HttpHeaders;
@@ -8,7 +7,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 @Value
@@ -79,7 +77,7 @@ public class SelectQuery {
         return CollectionUtils.toMultiValueMap(map);
     }
 
-    public Consumer<HttpHeaders> addHeaderValues() {
+    public Consumer<HttpHeaders> addPaginationHeader() {
         var headers = new HashMap<String, List<String>>();
         this.pagination.ifPresent(paginationValue -> headers.put("Range", Collections.singletonList(paginationValue.serialize())));
         return bulkHeaders -> {

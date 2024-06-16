@@ -10,62 +10,61 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @Value
-public class UpdateQuery {
+public class DeleteQuery {
 
     @NonNull
     String table;
 
     @NonNull
-    List<Map<String,Object>> valuesToUpdate;
-
-    boolean select;
+    Boolean delete; //toggle functionality
 
     @NonNull
     Filter filter;
 
-    private UpdateQuery(@NonNull String table,
-                        @NonNull List<Map<String, Object>> valuesToUpdate,
+    boolean select;
+
+    private DeleteQuery(@NonNull String table,
+                        @NonNull Boolean delete,
                         @NonNull Filter filter,
                         boolean select) {
         this.table = table;
-        this.valuesToUpdate = valuesToUpdate;
+        this.delete = delete;
         this.filter = filter;
         this.select = select;
     }
 
-    public static class UpdateQueryBuilder {
+    public static class DeleteQueryBuilder {
 
         String table;
 
-        List<Map<String, Object>> valuesToUpdate;
+        Boolean delete;
 
         Filter filter;
 
-        Boolean select = false;
+        boolean select = false;
 
-        public UpdateQueryBuilder from(String table) {
+        public DeleteQueryBuilder from(String table) {
             this.table = table;
             return this;
         }
 
-        @SafeVarargs
-        public final UpdateQueryBuilder update(Map<String, Object>... value) {
-            this.valuesToUpdate = List.of(value);
+        public DeleteQueryBuilder delete() {
+            this.delete = true;
             return this;
         }
 
-        public UpdateQueryBuilder filter(Filter filter) {
+        public DeleteQueryBuilder filter(Filter filter) {
             this.filter = filter;
             return this;
         }
 
-        public UpdateQueryBuilder select() {
+        public DeleteQueryBuilder select() {
             this.select = true;
             return this;
         }
 
-        public UpdateQuery build() {
-            return new UpdateQuery(table, valuesToUpdate, filter, select);
+        public DeleteQuery build() {
+            return new DeleteQuery(table, delete, filter, select);
         }
     }
 
@@ -75,10 +74,10 @@ public class UpdateQuery {
         return CollectionUtils.toMultiValueMap(map);
     }
 
-    public Consumer<HttpHeaders> addSelectHeader() {
+    public Consumer<HttpHeaders> addDeleteHeader() {
         var headers = new HashMap<String, List<String>>();
         if (this.select) {
-            headers.put("Prefer",List.of("return=representation")); //TODO: return only updated values
+            headers.put("Prefer",List.of("return=representation")); //TODO: return only deleted values
         }
         return bulkHeaders -> {
             bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
