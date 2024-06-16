@@ -83,7 +83,7 @@ is used to deserialize the JSON response into the corresponding POJO.
 
 If we wanted to execute the SearchQuery from above, we would do this:
 ```dtd
-    var response = client.executeQuery(query, String.class);
+    var response = client.executeSelect(query, String.class);
     System.out.println(response);
     //output: [{"id":"12345-6789","foo":"bar"}]
 ```
