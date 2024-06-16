@@ -25,7 +25,13 @@ dashboard along with the service key.
 
 ### Building a Query
 
-From there, you can query your database tables by building a query. 
+From there, you can invoke an operation on your database by building a query. Each operation
+has its own corresponding query object.
+
+#### SelectQuery
+
+To select a column in the table, you can use the `SelectQuery`. For example:
+
 ```dtd
     var query = new SelectQuery
         .SelectQueryBuilder()
@@ -36,6 +42,38 @@ From there, you can query your database tables by building a query.
 
 This query is the SQL equivalent of selecting all fields
 from the `doctors` table.
+
+#### InsertQuery
+
+To insert a row or multiple rows into the table, you can use the `InsertQuery`.
+
+```dtd
+    var query = new InsertQuery
+        .InsertQueryBuilder()
+        .from("doctors")
+        .insert(Map.of("full_name", "John Doe")
+        .select()
+        .build();
+```
+
+Note: this method will return an empty string if you do not invoke select(). If select is invoked, it will
+return the new row/rows inserted in the table.
+
+#### UpdateQuery
+
+If you want to update a specific row, you can use the `UpdateQuery` along with a `Filter`. For more information on
+filtering, view the [section on using Filters](#Filters).
+
+```dtd
+    var query = new UpdateQuery
+        .UpdateQueryBuilder()
+        .from("doctors")
+        .update(Map.of("full_name", "Sarah Smith")
+        .filter(filter)
+        .build();
+```
+
+Note: In addition, this query also will need the `select()` method explicitly invoked to get a proper String response.
 
 ### Executing a Query
 
@@ -61,15 +99,8 @@ So the response above, would correspond to the table below:
 |---|--------------|---------------|
 | 1 | 12345-6789   | bar           |
 
-## Queries
 
-### Types of Queries
-
-- SelectQuery
-- InsertQuery
-- UpdateQuery
-
-### Query Filters
+### Filters
 
 You can include a Filter in your query to refine your search. Here are the following filters that are supported:
 
@@ -102,6 +133,8 @@ Match only rows where column matches pattern case-insensitively.
 
 #### Query Filter Usage
 
+Here is how you can use the FilterBuilder to build a Filter:
+
 ```dtd
     var filter = new Filter.FilterBuilder()
             .equals("specialty", "Internal Medicine")
@@ -116,7 +149,7 @@ Match only rows where column matches pattern case-insensitively.
             .build();
 ```
 
-Filters are supported for SearchQuery, UpdateQuery, and DeleteQuery
+Note: Filters are supported for SearchQuery, UpdateQuery, and DeleteQuery
 
 ```dtd
     var query = new SearchQuery.SearchQueryBuilder()
