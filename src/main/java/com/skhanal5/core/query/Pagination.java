@@ -1,5 +1,8 @@
 package com.skhanal5.core.query;
 
+/**
+ * Represents a Pagination instance.
+ */
 class Pagination {
     int start;
 

@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-
 /**
- * Represents a client to interact with the Supabase database.
+ * The main entry point to interact with Supabase Database.
+ *
+ * <p> Requires the user to provide a </p>
  */
-
 public class SupabaseClient {
 
     @NonNull
@@ -37,18 +37,51 @@ public class SupabaseClient {
        this.mapper = mapper;
     }
 
+    /**
+     * Executes a SelectQuery and returns the search response as a POJO of type responseType. The responseType
+     * class definition should match the schema of your table.
+     *
+     * @param query The query to execute
+     * @param responseType The class of the POJO that you want the response to be converted to
+     * @return  the response POJO
+     * @param <T> the type of the expected response POJO
+     */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
         var queryParams = query.convertToQueryParams();
         var additionalHeaders = query.addPaginationHeader();
         return this.makeSelectAPICall(query.getTable(),queryParams, additionalHeaders, responseType);
     }
 
+    /**
+     * Executes a InsertQuery and returns the inserted row as a POJO of type responseType. The responseType
+     * class definition should match the schema of your table.
+     *
+     * Note: Nothing will be returned, if select() is not explicitly invoked in your InsertQuery. The method
+     * will return null.
+     *
+     * @param query The query to execute
+     * @param responseType The class of the POJO that you want the response to be converted to
+     * @return  the response POJO or null
+     * @param <T> the type of the expected response POJO
+     */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToInsert();
         var additionalHeaders = query.addSelectHeader();
         return this.makeInsertDBCall(query.getTable(), requestBody, additionalHeaders, responseType);
     }
 
+    /**
+     * Executes a UpdateQuery and returns the updated row as a POJO of type responseType. The responseType
+     * class definition should match the schema of your table.
+     *
+     * Note: Nothing will be returned, if select() is not explicitly invoked in your UpdateQuery. The method
+     * will return null.
+     *
+     * @param query The query to execute
+     * @param responseType The class of the POJO that you want the response to be converted to
+     * @return  the response POJO or null
+     * @param <T> the type of the expected response POJO
+     */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToUpdate();
         var headers = query.addSelectHeader();
@@ -56,8 +89,21 @@ public class SupabaseClient {
         return this.makeUpdateDBCall(query.getTable(), headers, queryParams, requestBody, responseType);
     }
 
+    /**
+     * Executes a DeleteQuery and returns the deleted row as a POJO of type responseType. The responseType
+     * class definition should match the schema of your table.
+     *
+     * Note: Nothing will be returned, if select() is not explicitly invoked in your DeleteQuery. The method
+     * will return null.
+     *
+     * @param query The query to execute
+     * @param responseType The class of the POJO that you want the response to be converted to
+     * @return  the response POJO or null
+     * @param <T> the type of the expected response POJO
+     */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
         var queryParams = query.convertToQueryParams();
+        var headers = query.addSelectHeader();
         return this.makeDeleteAPICall(query.getTable(), queryParams, responseType);
     }
 
@@ -137,9 +183,14 @@ public class SupabaseClient {
                 .block();
     }
 
-
-
-
+    /**
+     * The most basic way of making an instance of the SupabaseClient. Utilizes built-in object mapper that
+     * this library provides with no additional configuration.
+     *
+     * @param databaseUrl Represents the Supabase Database API base URL.
+     * @param serviceKey Represents the Supabase Database service key. Note, this should not be exposed to clients.
+     * @return an instance of a SupabaseClient
+     */
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
         var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
@@ -152,6 +203,16 @@ public class SupabaseClient {
         return new SupabaseClient(client);
     }
 
+    /**
+     * An alternative factory method to building a SupabaseClient. Allows consumers to provide their own ObjectMapper
+     * in case there is a use case that requires the responseType POJO in database operations to be deserialized in a
+     * specific manner.
+     *
+     * @param databaseUrl Represents the Supabase Database API base URL.
+     * @param serviceKey Represents the Supabase Database service key. Note, this should not be exposed to clients.
+     * @param mapper An instance of Jackson's ObjectMapper.
+     * @return an instance of a SupabaseClient
+     */
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey, @NonNull ObjectMapper mapper) {
         var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = WebClient
@@ -163,13 +224,4 @@ public class SupabaseClient {
 
        return new SupabaseClient(client, mapper);
     }
-
-    public static SupabaseClient newInstance(@NonNull WebClient client, @NonNull ObjectMapper mapper) {
-        return new SupabaseClient(client, mapper);
-    }
-
-    public static SupabaseClient newInstance(@NonNull WebClient client) {
-        return new SupabaseClient(client);
-    }
-
 }
