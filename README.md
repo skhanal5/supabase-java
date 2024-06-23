@@ -65,15 +65,43 @@ If you want to update a specific row, you can use the `UpdateQuery` along with a
 filtering, view the [section on using Filters](#Filters).
 
 ```dtd
+    var filter = new Filter
+        .FilterBuilder()
+        .equals("full_name", "John Doe")
+        .build();
+
     var query = new UpdateQuery
         .UpdateQueryBuilder()
         .from("doctors")
-        .update(Map.of("full_name", "Sarah Smith")
+        .update(Map.of("full_name", "John Smith")
         .filter(filter)
+        .select()
         .build();
 ```
 
-Note: In addition, this query also will need the `select()` method explicitly invoked to get a proper String response.
+Note: this method will return an empty string if you do not invoke select(). If select is invoked, it will
+return the updated row in the table.
+
+#### DeleteQuery
+
+If you want to delete a specific row (or rows), you can use the `DeleteQuery` along with a `Filter`.
+
+```dtd
+    var filter = new Filter
+        .FilterBuilder()
+        .equals("full_name", "John")
+        .build();
+
+    var query = new DeleteQuery
+        .DeleteQueryBuilder()
+        .from("doctors")
+        .delete()
+        .filter(filter)
+        .select()
+        .build();
+```
+
+Note: If you do not invoke the `select()` method, you will not get a response back from doing this operation. Invoking it returns the deleted row(s).
 
 ### Executing a Query
 
@@ -83,7 +111,7 @@ is used to deserialize the JSON response into the corresponding POJO.
 
 If we wanted to execute the SearchQuery from above, we would do this:
 ```dtd
-    var response = client.executeQuery(query, String.class);
+    var response = client.executeSelect(query, String.class);
     System.out.println(response);
     //output: [{"id":"12345-6789","foo":"bar"}]
 ```
