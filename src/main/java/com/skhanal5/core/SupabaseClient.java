@@ -13,9 +13,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * The main entry point to interact with Supabase Database.
+ * The main entry point to instantiation an instance of SupabaseClient and
+ * interact with Supabase Database via REST. Utilizes WebClient and Jackson
+ * under the hood to handle sending requests to Supabase Database API and
+ * serializing responses.
  *
- * <p> Requires the user to provide a </p>
+ * We expose two ways of initializing an instance of SupabaseClient to consumers .
+ * @see #newInstance(String, String)    Using the database url and service key
+ * @see #newInstance(String, String, ObjectMapper) Using the databaes url, service key, and a Jackson ObjectMapper
  */
 public class SupabaseClient {
 
