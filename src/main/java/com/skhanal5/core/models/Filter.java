@@ -1,5 +1,8 @@
-package com.skhanal5.core.query;
+package com.skhanal5.core.models;
 
+import com.skhanal5.core.constants.FilterConstants;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Value;
 
 import java.util.*;
@@ -13,6 +16,7 @@ import java.util.Map.Entry;
  * </p>
  */
 @Value
+@Getter(AccessLevel.PACKAGE)
 public class Filter {
 
     Map<String, Map<String, Object>> filterData;
@@ -36,7 +40,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder equals(String column, String value) {
-            this.filterData.put("eq.", Map.of(column, value));
+            this.filterData.put(FilterConstants.EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -47,7 +51,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder greaterThan(String column, int value) {
-            this.filterData.put("gt.", Map.of(column, value));
+            this.filterData.put(FilterConstants.GREATER_THAN, Map.of(column, value));
             return this;
         }
 
@@ -58,7 +62,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder lessThan(String column, int value) {
-            this.filterData.put("lt.", Map.of(column, value));
+            this.filterData.put(FilterConstants.LESS_THAN, Map.of(column, value));
             return this;
         }
 
@@ -69,7 +73,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder greaterThanOrEquals(String column, int value) {
-            this.filterData.put("gte.", Map.of(column, value));
+            this.filterData.put(FilterConstants.GREATER_THAN_OR_EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -80,7 +84,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder lessThanOrEquals(String column, int value) {
-            this.filterData.put("lte.", Map.of(column, value));
+            this.filterData.put(FilterConstants.LESS_THAN_OR_EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -91,7 +95,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder like(String column, String pattern) {
-            this.filterData.put("like.", Map.of(column, pattern));
+            this.filterData.put(FilterConstants.LIKE, Map.of(column, pattern));
             return this;
         }
 
@@ -102,7 +106,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder ilike(String column, String pattern) {
-            this.filterData.put("ilike.", Map.of(column, pattern));
+            this.filterData.put(FilterConstants.I_LIKE, Map.of(column, pattern));
             return this;
         }
 
@@ -113,7 +117,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder is(String column, Optional<Boolean> value) {
-            this.filterData.put("is.", Map.of(column, value));
+            this.filterData.put(FilterConstants.IS, Map.of(column, value));
             return this;
         }
 
@@ -124,7 +128,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder in(String column, List<String> values) {
-            this.filterData.put("in.", Map.of(column, values));
+            this.filterData.put(FilterConstants.IN, Map.of(column, values));
             return this;
         }
 
@@ -135,7 +139,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder notEquals(String column, String value) {
-            this.filterData.put("neq.", Map.of(column, value));
+            this.filterData.put(FilterConstants.NOT_EQUALS, Map.of(column, value));
             return this;
         }
 

@@ -1,6 +1,5 @@
-package com.skhanal5.core.query;
+package com.skhanal5.core.models;
 
-import com.skhanal5.core.query.DeleteQuery.DeleteQueryBuilder;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.http.HttpHeaders;

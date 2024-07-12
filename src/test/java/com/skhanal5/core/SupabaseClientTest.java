@@ -3,9 +3,6 @@ package com.skhanal5.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import static org.mockito.Mockito.mock;
 
 public class SupabaseClientTest {
 
@@ -45,7 +42,4 @@ public class SupabaseClientTest {
         Assertions.assertNotNull(supabaseClient.client);
         Assertions.assertEquals(mapper, supabaseClient.mapper);
     }
-
-
-
 }
