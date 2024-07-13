@@ -1,7 +1,7 @@
 package com.skhanal5.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skhanal5.core.query.*;
+import com.skhanal5.core.models.*;
 import lombok.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

@@ -1,4 +1,4 @@
-package com.skhanal5.core.query;
+package com.skhanal5.core.models;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -105,7 +105,7 @@ public class SelectQuery {
             return new SelectQuery(table,
                     columnsToSelect,
                     Optional.ofNullable(pagination),
-                    Optional.of(filter));
+                    Optional.ofNullable(filter));
         }
 
     }
@@ -132,8 +132,6 @@ public class SelectQuery {
     public Consumer<HttpHeaders> addPaginationHeader() {
         var headers = new HashMap<String, List<String>>();
         this.pagination.ifPresent(paginationValue -> headers.put("Range", Collections.singletonList(paginationValue.serialize())));
-        return bulkHeaders -> {
-            bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
-        };
+        return bulkHeaders -> bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
     }
 }
