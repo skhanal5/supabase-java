@@ -56,8 +56,8 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addPaginationHeader());
+        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
         Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
         return this.makeSelectAPICall(query.getTable(),queryParams, headers, responseType);
     }
@@ -76,7 +76,7 @@ public class SupabaseClient {
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToInsert();
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
         Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
         return this.makeInsertDBCall(query.getTable(), requestBody, headers, responseType);
     }
@@ -95,9 +95,9 @@ public class SupabaseClient {
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToUpdate();
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
         Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
-        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
+        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
         return this.makeUpdateDBCall(query.getTable(), headers, queryParams, requestBody, responseType);
     }
 
@@ -114,9 +114,9 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
         Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
-        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
+        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
         return this.makeDeleteAPICall(query.getTable(), headers, queryParams, responseType);
     }
 
