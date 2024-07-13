@@ -1,13 +1,12 @@
 package com.skhanal5.models;
 
-import com.skhanal5.core.models.SelectQuery.SelectQueryBuilder;
+import com.skhanal5.models.SelectQuery.SelectQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 class SelectQueryTest {
@@ -49,8 +48,7 @@ class SelectQueryTest {
                 .select("bar")
                 .build();
 
-        var expectedQueryParams = new LinkedMultiValueMap<>();
-        expectedQueryParams.put("select", Collections.singletonList("bar"));
+        var expectedQueryParams = Map.of("select", Collections.singletonList("bar"));
         var actualQueryParams = selectQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
@@ -63,11 +61,9 @@ class SelectQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = new LinkedMultiValueMap<>();
-        expectedQueryParams.put("baz", List.of("eq.bin"));
-        expectedQueryParams.put("select", Collections.singletonList("bar"));
+        var expectedQueryParams = Map.of("baz", List.of("eq.bin"), "select", Collections.singletonList("bar"));
 
-        var actualQueryParams = selectQuery.convertToQueryParams();
+        var actualQueryParams = selectQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -79,9 +75,7 @@ class SelectQueryTest {
                 .select("bar")
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= selectQuery.buildAdditionalHeaders();
-        actualHeaderConsumer.accept(actualHeaders);
+        var actualHeaders = selectQuery.buildAdditionalHeaders();
 
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertTrue(actualHeaders.isEmpty());
@@ -96,11 +90,9 @@ class SelectQueryTest {
                 .range(0,10)
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= selectQuery.buildAdditionalHeaders();
-        actualHeaderConsumer.accept(actualHeaders);
+        var actualHeaders = selectQuery.buildAdditionalHeaders();
 
         Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("0-10"), actualHeaders.get("range"));
+        Assertions.assertEquals(List.of("0-10"), actualHeaders.get("Range"));
     }
 }

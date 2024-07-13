@@ -125,9 +125,11 @@ public class SelectQuery implements Query{
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public HashMap<String, List<String>> buildAdditionalHeaders() {
-        var headers = new HashMap<String, List<String>>();
-        this.pagination.ifPresent(paginationValue -> headers.put("Range", Collections.singletonList(paginationValue.serialize())));
-        return headers;
+    public Optional<Map<String, List<String>>> buildAdditionalHeaders() {
+        if (pagination.isPresent()) {
+            var paginationUnwrapped = pagination.get();
+            return Optional.of(Map.of("Range", Collections.singletonList(paginationUnwrapped.serialize())));
+        }
+        return Optional.empty();
     }
 }

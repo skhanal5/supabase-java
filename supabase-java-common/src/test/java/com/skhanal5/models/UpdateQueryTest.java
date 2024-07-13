@@ -1,10 +1,8 @@
 package com.skhanal5.models;
 
-import com.skhanal5.core.models.UpdateQuery.UpdateQueryBuilder;
+import com.skhanal5.models.UpdateQuery.UpdateQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
 import java.util.Map;
@@ -45,8 +43,8 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().build())
                 .build();
 
-        var expectedQueryParams = new LinkedMultiValueMap<>();
-        var actualQueryParams = updateQuery.convertToQueryParams();
+        var expectedQueryParams = Map.of();
+        var actualQueryParams = updateQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -59,10 +57,9 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = new LinkedMultiValueMap<>();
-        expectedQueryParams.put("baz", List.of("eq.bin"));
+        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
 
-        var actualQueryParams = updateQuery.convertToQueryParams();
+        var actualQueryParams = updateQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -74,9 +71,7 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= updateQuery.addSelectHeader();
-        actualHeaderConsumer.accept(actualHeaders);
+        var actualHeaders = updateQuery.buildAdditionalHeaders();
 
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertTrue(actualHeaders.isEmpty());
@@ -91,9 +86,7 @@ public class UpdateQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= updateQuery.addSelectHeader();
-        actualHeaderConsumer.accept(actualHeaders);
+        var actualHeaders = updateQuery.buildAdditionalHeaders();
 
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));

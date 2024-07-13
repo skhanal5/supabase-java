@@ -1,6 +1,6 @@
 package com.skhanal5.models;
 
-import com.skhanal5.core.constants.FilterConstants;
+import com.skhanal5.constants.FilterConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -22,6 +22,6 @@ public class FilterConstants {
 
     public static final String NOT_EQUALS = "neq.";
 
-    public FilterConstants() {
+    private FilterConstants() {
     }
 }

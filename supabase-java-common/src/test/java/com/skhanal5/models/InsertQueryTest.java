@@ -1,9 +1,8 @@
 package com.skhanal5.models;
 
-import com.skhanal5.core.models.InsertQuery.InsertQueryBuilder;
+import com.skhanal5.models.InsertQuery.InsertQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 import java.util.Map;
@@ -40,9 +39,7 @@ public class InsertQueryTest {
                 .insert(Map.of("bar", "baz"))
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= insertQuery.buildAdditionalHeaders();
-        actualHeaderConsumer.accept(actualHeaders);
+        var actualHeaders = insertQuery.buildAdditionalHeaders();
 
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertTrue(actualHeaders.isEmpty());
@@ -56,10 +53,7 @@ public class InsertQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= insertQuery.addSelectHeader();
-        actualHeaderConsumer.accept(actualHeaders);
-
+        var actualHeaders = insertQuery.buildAdditionalHeaders();
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
     }

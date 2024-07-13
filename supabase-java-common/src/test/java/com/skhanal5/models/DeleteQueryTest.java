@@ -1,13 +1,11 @@
 package com.skhanal5.models;
 
-import com.skhanal5.core.models.DeleteQuery.DeleteQueryBuilder;
-
+import com.skhanal5.models.DeleteQuery.DeleteQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
+import java.util.Map;
 
 public class DeleteQueryTest {
 
@@ -45,10 +43,9 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var expectedQueryParams = new LinkedMultiValueMap<>();
-        expectedQueryParams.put("baz", List.of("eq.bin"));
+        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
 
-        var actualQueryParams = deleteQuery.convertToQueryParams();
+        var actualQueryParams = deleteQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -60,11 +57,7 @@ public class DeleteQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= deleteQuery.addSelectHeader();
-        actualHeaderConsumer.accept(actualHeaders);
-
-        Assertions.assertNotNull(actualHeaders);
+        var actualHeaders= deleteQuery.buildAdditionalHeaders();
         Assertions.assertTrue(actualHeaders.isEmpty());
     }
 
@@ -77,10 +70,7 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= deleteQuery.addSelectHeader();
-        actualHeaderConsumer.accept(actualHeaders);
-
+        var actualHeaders = deleteQuery.buildAdditionalHeaders();
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
     }

@@ -1,12 +1,10 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderConstants;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a query that is used to insert rows from a Supabase Database table.
@@ -102,11 +100,10 @@ public class InsertQuery implements Query{
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public HashMap<String, List<String>> buildAdditionalHeaders() {
-        var headers = new HashMap<String, List<String>>();
+    public Optional<Map<String, List<String>>> buildAdditionalHeaders() {
         if (this.select) {
-            headers.put("Prefer",List.of("return=representation")); //TODO: return only inserted values
+           return Optional.of(HeaderConstants.RETRIEVE_RESPONSE_VALUES);
         }
-        return headers;
+        return Optional.empty();
     }
 }
