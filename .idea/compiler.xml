@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="supabase-spring" />
         <module name="supabase-java-common" />
+        <module name="supabase-spring" />
         <module name="supabase-java-spring" />
+        <module name="supabase-java-native" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

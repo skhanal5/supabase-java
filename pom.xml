@@ -13,6 +13,7 @@
   <modules>
     <module>supabase-java-spring</module>
     <module>supabase-java-common</module>
+    <module>supabase-java-native</module>
   </modules>
 
   <distributionManagement>
