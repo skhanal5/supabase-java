@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.Value;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  * @see InsertQueryBuilder
  */
 @Value
-public class InsertQuery {
+public class InsertQuery implements Query{
 
     @NonNull
     String table;
@@ -90,13 +91,18 @@ public class InsertQuery {
         }
     }
 
+    @Override
+    public LinkedHashMap<String, List<String>> buildQueryParams() {
+        return null;
+    }
+
     /**
      * In case select() is invoked, this method will add a header to the WebClient
      * that will return the inserted contents in the response body.
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public HashMap<String, List<String>> addSelectHeader() {
+    public HashMap<String, List<String>> buildAdditionalHeaders() {
         var headers = new HashMap<String, List<String>>();
         if (this.select) {
             headers.put("Prefer",List.of("return=representation")); //TODO: return only inserted values

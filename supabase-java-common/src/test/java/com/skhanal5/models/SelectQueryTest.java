@@ -51,7 +51,7 @@ class SelectQueryTest {
 
         var expectedQueryParams = new LinkedMultiValueMap<>();
         expectedQueryParams.put("select", Collections.singletonList("bar"));
-        var actualQueryParams = selectQuery.convertToQueryParams();
+        var actualQueryParams = selectQuery.buildQueryParams();
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -80,7 +80,7 @@ class SelectQueryTest {
                 .build();
 
         var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= selectQuery.addPaginationHeader();
+        var actualHeaderConsumer= selectQuery.buildAdditionalHeaders();
         actualHeaderConsumer.accept(actualHeaders);
 
         Assertions.assertNotNull(actualHeaders);
@@ -97,7 +97,7 @@ class SelectQueryTest {
                 .build();
 
         var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= selectQuery.addPaginationHeader();
+        var actualHeaderConsumer= selectQuery.buildAdditionalHeaders();
         actualHeaderConsumer.accept(actualHeaders);
 
         Assertions.assertNotNull(actualHeaders);

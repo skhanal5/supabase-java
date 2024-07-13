@@ -41,7 +41,7 @@ public class InsertQueryTest {
                 .build();
 
         var actualHeaders = new HttpHeaders();
-        var actualHeaderConsumer= insertQuery.addSelectHeader();
+        var actualHeaderConsumer= insertQuery.buildAdditionalHeaders();
         actualHeaderConsumer.accept(actualHeaders);
 
         Assertions.assertNotNull(actualHeaders);

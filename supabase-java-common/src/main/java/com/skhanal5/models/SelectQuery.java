@@ -13,7 +13,7 @@ import java.util.*;
  * @see SelectQueryBuilder
  */
 @Value
-public class SelectQuery {
+public class SelectQuery implements Query{
     @NonNull
     String table;
 
@@ -112,7 +112,7 @@ public class SelectQuery {
      *
      * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
      */
-    public LinkedHashMap<String, List<String>> convertToQueryParams() {
+    public LinkedHashMap<String, List<String>> buildQueryParams() {
         var map = new LinkedHashMap<String, List<String>>();
         filter.ifPresent(filterVal -> filterVal.addFiltersOntoQueryParams(map));
         map.put("select", List.of(String.join(",", this.columnsToSelect)));
@@ -125,7 +125,7 @@ public class SelectQuery {
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public HashMap<String, List<String>> addPaginationHeader() {
+    public HashMap<String, List<String>> buildAdditionalHeaders() {
         var headers = new HashMap<String, List<String>>();
         this.pagination.ifPresent(paginationValue -> headers.put("Range", Collections.singletonList(paginationValue.serialize())));
         return headers;
