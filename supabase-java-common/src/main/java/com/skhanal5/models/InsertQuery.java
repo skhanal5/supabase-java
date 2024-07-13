@@ -1,4 +1,4 @@
-package com.skhanal5.core.models;
+package com.skhanal5.models;
 
 import lombok.NonNull;
 import lombok.Value;

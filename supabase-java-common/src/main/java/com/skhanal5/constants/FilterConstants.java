@@ -1,4 +1,4 @@
-package com.skhanal5.core.constants;
+package com.skhanal5.constants;
 
 public class FilterConstants {
 

@@ -1,4 +1,4 @@
-package com.skhanal5.core.models;
+package com.skhanal5.models;
 
 import com.skhanal5.core.models.SelectQuery.SelectQueryBuilder;
 import org.junit.jupiter.api.Assertions;

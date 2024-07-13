@@ -1,6 +1,6 @@
-package com.skhanal5.core.models;
+package com.skhanal5.models;
 
-import com.skhanal5.core.constants.FilterConstants;
+import com.skhanal5.constants.FilterConstants;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;

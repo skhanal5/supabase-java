@@ -8,6 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="supabase-spring" />
+        <module name="supabase-java-common" />
+        <module name="supabase-java-spring" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

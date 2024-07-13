@@ -26,6 +26,12 @@
 
     <dependencies>
 
+        <!-- common dependency -->
+        <dependency>
+            <groupId>com.skhanal5</groupId>
+            <artifactId>supabase-java-common</artifactId>
+        </dependency>
+
         <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
