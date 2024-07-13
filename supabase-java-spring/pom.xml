@@ -28,8 +28,9 @@
 
         <!-- common dependency -->
         <dependency>
-            <groupId>com.skhanal5</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>supabase-java-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Spring dependencies -->

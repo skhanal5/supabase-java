@@ -2,13 +2,10 @@ package com.skhanal5.models;
 
 import lombok.NonNull;
 import lombok.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Represents a query that is used to insert rows from a Supabase Database table.
@@ -99,13 +96,11 @@ public class InsertQuery {
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public Consumer<HttpHeaders> addSelectHeader() {
+    public HashMap<String, List<String>> addSelectHeader() {
         var headers = new HashMap<String, List<String>>();
         if (this.select) {
             headers.put("Prefer",List.of("return=representation")); //TODO: return only inserted values
         }
-        return bulkHeaders -> {
-            bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
-        };
+        return headers;
     }
 }

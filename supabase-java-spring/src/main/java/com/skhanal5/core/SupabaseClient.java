@@ -1,10 +1,14 @@
 package com.skhanal5.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skhanal5.core.models.*;
+import com.skhanal5.models.DeleteQuery;
+import com.skhanal5.models.InsertQuery;
+import com.skhanal5.models.SelectQuery;
+import com.skhanal5.models.UpdateQuery;
 import lombok.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -52,9 +56,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        var queryParams = query.convertToQueryParams();
-        var additionalHeaders = query.addPaginationHeader();
-        return this.makeSelectAPICall(query.getTable(),queryParams, additionalHeaders, responseType);
+        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addPaginationHeader());
+        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        return this.makeSelectAPICall(query.getTable(),queryParams, headers, responseType);
     }
 
     /**
@@ -71,8 +76,9 @@ public class SupabaseClient {
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToInsert();
-        var additionalHeaders = query.addSelectHeader();
-        return this.makeInsertDBCall(query.getTable(), requestBody, additionalHeaders, responseType);
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        return this.makeInsertDBCall(query.getTable(), requestBody, headers, responseType);
     }
 
     /**
@@ -89,8 +95,9 @@ public class SupabaseClient {
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToUpdate();
-        var headers = query.addSelectHeader();
-        var queryParams = query.convertToQueryParams();
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
         return this.makeUpdateDBCall(query.getTable(), headers, queryParams, requestBody, responseType);
     }
 
@@ -107,9 +114,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var queryParams = query.convertToQueryParams();
-        var headers = query.addSelectHeader();
-        return this.makeDeleteAPICall(query.getTable(), queryParams, responseType);
+        var additionalHeaders = CollectionUtils.toMultiValueMap(query.addSelectHeader());
+        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        var queryParams = CollectionUtils.toMultiValueMap(query.convertToQueryParams());
+        return this.makeDeleteAPICall(query.getTable(), headers, queryParams, responseType);
     }
 
     private <T> T makeSelectAPICall(String table,
@@ -129,7 +137,9 @@ public class SupabaseClient {
     }
 
     private <T> T makeInsertDBCall(String table,
-                                   List<Map<String, Object>> requestBody, Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
+                                   List<Map<String, Object>> requestBody,
+                                   Consumer<HttpHeaders> headersConsumer,
+                                   Class<T> responseType) {
         return client
                 .post()
                 .uri(uriBuilder -> {
@@ -171,8 +181,9 @@ public class SupabaseClient {
     }
 
     private <T> T makeDeleteAPICall(String table,
-                             MultiValueMap<String, String> queryParameters,
-                             Class<T> responseType) {
+                                    Consumer<HttpHeaders> headers,
+                                    MultiValueMap<String, String> queryParameters,
+                                    Class<T> responseType) {
         return client
                 .delete()
                 .uri(uriBuilder -> {
@@ -183,6 +194,7 @@ public class SupabaseClient {
                     System.out.println(uri);
                     return uri;
                 })
+                .headers(headers)
                 .retrieve()
                 .bodyToMono(responseType)
                 .block();

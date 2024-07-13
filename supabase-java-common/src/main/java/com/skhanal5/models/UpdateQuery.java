@@ -2,12 +2,8 @@ package com.skhanal5.models;
 
 import lombok.NonNull;
 import lombok.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.MultiValueMap;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Represents a query that is used to update rows from a Supabase Database table.
@@ -116,10 +112,10 @@ public class UpdateQuery {
      *
      * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
      */
-    public MultiValueMap<String, String> convertToQueryParams() {
+    public LinkedHashMap<String, List<String>> convertToQueryParams() {
         var map = new LinkedHashMap<String, List<String>>();
         filter.addFiltersOntoQueryParams(map);
-        return CollectionUtils.toMultiValueMap(map);
+        return map;
     }
 
     /**
@@ -128,13 +124,11 @@ public class UpdateQuery {
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public Consumer<HttpHeaders> addSelectHeader() {
+    public HashMap<String, List<String>> addSelectHeader() {
         var headers = new HashMap<String, List<String>>();
         if (this.select) {
             headers.put("Prefer",List.of("return=representation")); //TODO: return only updated values
         }
-        return bulkHeaders -> {
-            bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
-        };
+        return headers;
     }
 }

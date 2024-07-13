@@ -2,12 +2,8 @@ package com.skhanal5.models;
 
 import lombok.NonNull;
 import lombok.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.MultiValueMap;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Represents a query that is used to select/search rows from a Supabase Database table.
@@ -116,11 +112,11 @@ public class SelectQuery {
      *
      * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
      */
-    public MultiValueMap<String, String> convertToQueryParams() {
+    public LinkedHashMap<String, List<String>> convertToQueryParams() {
         var map = new LinkedHashMap<String, List<String>>();
         filter.ifPresent(filterVal -> filterVal.addFiltersOntoQueryParams(map));
         map.put("select", List.of(String.join(",", this.columnsToSelect)));
-        return CollectionUtils.toMultiValueMap(map);
+        return map;
     }
 
     /**
@@ -129,9 +125,9 @@ public class SelectQuery {
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public Consumer<HttpHeaders> addPaginationHeader() {
+    public HashMap<String, List<String>> addPaginationHeader() {
         var headers = new HashMap<String, List<String>>();
         this.pagination.ifPresent(paginationValue -> headers.put("Range", Collections.singletonList(paginationValue.serialize())));
-        return bulkHeaders -> bulkHeaders.addAll(CollectionUtils.toMultiValueMap(headers));
+        return headers;
     }
 }
