@@ -3,7 +3,7 @@ package com.skhanal5.core.models;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class PaginationTest {
+class PaginationTest {
 
     @Test
     void testPaginationConstructor() {
