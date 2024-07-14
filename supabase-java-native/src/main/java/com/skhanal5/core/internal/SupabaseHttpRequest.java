@@ -1,6 +1,4 @@
-package com.skhanal5.core.util;
-
-import com.skhanal5.models.SelectQuery;
+package com.skhanal5.core.internal;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -9,14 +7,30 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
-public class RequestBuilder {
+public class SupabaseHttpRequest {
 
+    String baseURI;
 
+    String path;
 
+    Map<String, List<String>> headers;
 
+    Map<String, List<String>> queryParameters;
 
-    public RequestBuilder(SelectQuery query) {
+    public SupabaseHttpRequest(String baseURI, String path, Map<String, List<String>> headers, Map<String, List<String>> queryParameters) {
+        this.baseURI = baseURI;
+        this.path = path;
+        this.headers = headers;
+        this.queryParameters = queryParameters;
+    }
 
+    public HttpRequest toHttpRequest() {
+        var requestBuilder = HttpRequest.newBuilder();
+        var uri = buildURI(baseURI, path, queryParameters);
+        headers.forEach((key, value) -> requestBuilder.setHeader(key, value.toString()));
+        return requestBuilder
+                .uri(uri)
+                .build();
     }
 
     private static HttpRequest.Builder addHeaders(HttpRequest.Builder requestBuilder, Map<String, List<String>> headers) {

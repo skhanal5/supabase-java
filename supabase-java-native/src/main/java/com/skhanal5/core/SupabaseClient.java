@@ -2,6 +2,7 @@ package com.skhanal5.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.skhanal5.core.internal.SupabaseHttpRequestSender;
 import com.skhanal5.models.DeleteQuery;
 import com.skhanal5.models.InsertQuery;
 import com.skhanal5.models.SelectQuery;
@@ -10,10 +11,11 @@ import com.skhanal5.models.UpdateQuery;
 import lombok.*;
 
 import java.net.http.HttpClient;
+import java.util.Map;
 
 /**
  * The main entry point to instantiation an instance of SupabaseClient and
- * interact with Supabase Database via REST. Utilizes WebClient and Jackson
+ * interact with Supabase Database via REST. Utilizes HttpClient and Jackson
  * under the hood to handle sending requests to Supabase Database API and
  * serializing responses.
  *
@@ -23,25 +25,27 @@ import java.net.http.HttpClient;
  */
 public class SupabaseClient {
 
-    @NonNull
     HttpClient client;
-
-    @NonNull
-    ObjectMapper mapper;
 
     String baseURI;
 
+    ObjectMapper mapper;
+
+    Map<String,String> defaultHeaders;
+
     private static final String ENDPOINT_PATH = "/rest/v1/";
 
-    private SupabaseClient(String baseURI, HttpClient client) {
-        this.baseURI = baseURI;
+    private SupabaseClient(HttpClient client, String baseURI, Map<String,String> defaultHeaders) {
         this.client = client;
+        this.baseURI = baseURI;
+        this.defaultHeaders = defaultHeaders;
         this.mapper = new ObjectMapper();
     }
 
-    private SupabaseClient(String baseURI, HttpClient client, ObjectMapper mapper) {
-        this.baseURI = baseURI;
+    private SupabaseClient(HttpClient client, String baseURI, Map<String,String> defaultHeaders, ObjectMapper mapper) {
         this.client = client;
+        this.baseURI = baseURI;
+        this.defaultHeaders = defaultHeaders;
         this.mapper = mapper;
     }
 
@@ -57,8 +61,9 @@ public class SupabaseClient {
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
         // make RequestSender
         // return call
-        var sender = new
-        return this.makeSelectAPICall(query.getTable(),queryParams, additionalHeaders, responseType);
+        var sender = new SupabaseHttpRequestSender<>(client, this.defaultHeaders, query);
+        sender.invokeGETRequest();
+//        return this.makeSelectAPICall(query.getTable(),queryParams, additionalHeaders, responseType);
     }
 
     /**
@@ -127,7 +132,7 @@ public class SupabaseClient {
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
         var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = HttpClient.newHttpClient();
-        return new SupabaseClient(baseUrl, client);
+        return new SupabaseClient(client, baseUrl, clientHeaders);
     }
 
     /**
@@ -143,6 +148,10 @@ public class SupabaseClient {
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey, @NonNull ObjectMapper mapper) {
         var baseUrl = databaseUrl + ENDPOINT_PATH;
         var client = HttpClient.newHttpClient();
-        return new SupabaseClient(baseUrl, client, mapper);
+        var clientHeaders = Map.ofEntries(
+                Map.entry("apikey", serviceKey),
+                Map.entry("Authorization", "Bearer " + serviceKey)
+        );
+        return new SupabaseClient(client, baseUrl, clientHeaders, mapper);
     }
 }
