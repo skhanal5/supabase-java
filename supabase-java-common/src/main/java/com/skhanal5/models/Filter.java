@@ -1,6 +1,6 @@
 package com.skhanal5.models;
 
-import com.skhanal5.constants.FilterConstants;
+import com.skhanal5.constants.FilterType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
@@ -40,7 +40,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder equals(String column, String value) {
-            this.filterData.put(FilterConstants.EQUALS, Map.of(column, value));
+            this.filterData.put(FilterType.EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -51,7 +51,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder greaterThan(String column, int value) {
-            this.filterData.put(FilterConstants.GREATER_THAN, Map.of(column, value));
+            this.filterData.put(FilterType.GREATER_THAN, Map.of(column, value));
             return this;
         }
 
@@ -62,7 +62,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder lessThan(String column, int value) {
-            this.filterData.put(FilterConstants.LESS_THAN, Map.of(column, value));
+            this.filterData.put(FilterType.LESS_THAN, Map.of(column, value));
             return this;
         }
 
@@ -73,7 +73,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder greaterThanOrEquals(String column, int value) {
-            this.filterData.put(FilterConstants.GREATER_THAN_OR_EQUALS, Map.of(column, value));
+            this.filterData.put(FilterType.GREATER_THAN_OR_EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -84,7 +84,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder lessThanOrEquals(String column, int value) {
-            this.filterData.put(FilterConstants.LESS_THAN_OR_EQUALS, Map.of(column, value));
+            this.filterData.put(FilterType.LESS_THAN_OR_EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -95,7 +95,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder like(String column, String pattern) {
-            this.filterData.put(FilterConstants.LIKE, Map.of(column, pattern));
+            this.filterData.put(FilterType.LIKE, Map.of(column, pattern));
             return this;
         }
 
@@ -106,7 +106,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder ilike(String column, String pattern) {
-            this.filterData.put(FilterConstants.I_LIKE, Map.of(column, pattern));
+            this.filterData.put(FilterType.I_LIKE, Map.of(column, pattern));
             return this;
         }
 
@@ -117,7 +117,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder is(String column, Optional<Boolean> value) {
-            this.filterData.put(FilterConstants.IS, Map.of(column, value));
+            this.filterData.put(FilterType.IS, Map.of(column, value));
             return this;
         }
 
@@ -128,7 +128,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder in(String column, List<String> values) {
-            this.filterData.put(FilterConstants.IN, Map.of(column, values));
+            this.filterData.put(FilterType.IN, Map.of(column, values));
             return this;
         }
 
@@ -139,7 +139,7 @@ public class Filter {
          * @return A FilterBuilder with this filter configured
          */
         public FilterBuilder notEquals(String column, String value) {
-            this.filterData.put(FilterConstants.NOT_EQUALS, Map.of(column, value));
+            this.filterData.put(FilterType.NOT_EQUALS, Map.of(column, value));
             return this;
         }
 
@@ -152,19 +152,30 @@ public class Filter {
         }
     }
 
-    void addFiltersOntoQueryParams(LinkedHashMap<String, List<String>> queryParams) {
+    /*
+        TODO: add comment about why we represent this map in this way in relation to query params for
+        Supabase Database API
+     */
+    Map<String,String> convertFiltersToQueryParams() {
+        var queryParams = new HashMap<String,String>();
+
+        // TODO: please fix this, this is hideous
         filterData.forEach((filterType,filterColumnAndValue) -> {
             Entry<String, Object> columnToFilterValue = filterColumnAndValue.entrySet().iterator().next();
             var filterColumn = columnToFilterValue.getKey();
             var filterValue = columnToFilterValue.getValue();
-            var filterValueStr = filterValue.toString();
+            var filterValueString = "";
             if (filterValue instanceof List<?>) {
                 List<String> list = (List<String>) filterValue;
                 var stringifyList = String.join(",", list);
-                filterValueStr = "(" + stringifyList + ")";
+                filterValueString = "(" + stringifyList + ")";
+            } else {
+                filterValueString = filterValue.toString();
             }
-            queryParams.put(filterColumn, List.of(filterType + filterValueStr));
+            queryParams.put(filterColumn, filterType + filterValueString);
         });
+
+        return queryParams;
     }
 
 }

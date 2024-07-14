@@ -112,11 +112,11 @@ public class SelectQuery implements Query{
      *
      * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
      */
-    public LinkedHashMap<String, List<String>> buildQueryParams() {
-        var map = new LinkedHashMap<String, List<String>>();
-        filter.ifPresent(filterVal -> filterVal.addFiltersOntoQueryParams(map));
-        map.put("select", List.of(String.join(",", this.columnsToSelect)));
-        return map;
+    public Optional<Map<String, String>> buildQueryParams() {
+        var map = new HashMap<String, String>();
+        map.put("select", String.join(",", this.columnsToSelect));
+        filter.ifPresent(filterVal -> map.putAll(filterVal.convertFiltersToQueryParams()));
+        return Optional.of(map);
     }
 
     /**
@@ -125,10 +125,10 @@ public class SelectQuery implements Query{
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public Optional<Map<String, List<String>>> buildAdditionalHeaders() {
+    public Optional<Map<String, String>> buildAdditionalHeaders() {
         if (pagination.isPresent()) {
             var paginationUnwrapped = pagination.get();
-            return Optional.of(Map.of("Range", Collections.singletonList(paginationUnwrapped.serialize())));
+            return Optional.of(Map.of("Range", paginationUnwrapped.serialize()));
         }
         return Optional.empty();
     }

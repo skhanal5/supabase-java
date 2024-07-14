@@ -1,6 +1,6 @@
 package com.skhanal5.constants;
 
-public class FilterConstants {
+public class FilterType {
 
     public static final String EQUALS = "eq.";
 
@@ -22,6 +22,6 @@ public class FilterConstants {
 
     public static final String NOT_EQUALS = "neq.";
 
-    private FilterConstants() {
+    private FilterType() {
     }
 }

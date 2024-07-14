@@ -5,6 +5,6 @@ import java.util.*;
 public interface Query {
 
     public String getTable();
-    public LinkedHashMap<String, List<String>> buildQueryParams();
-    public Optional<Map<String, List<String>>> buildAdditionalHeaders();
+    public Optional<Map<String, String>> buildQueryParams();
+    public Optional<Map<String, String>> buildAdditionalHeaders();
 }

@@ -88,7 +88,7 @@ public class UpdateQueryTest {
 
         var actualHeaders = updateQuery.buildAdditionalHeaders();
 
-        Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
+        Assertions.assertFalse(actualHeaders.isEmpty());
+        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
     }
 }

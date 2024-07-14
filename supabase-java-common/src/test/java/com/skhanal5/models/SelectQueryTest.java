@@ -92,7 +92,7 @@ class SelectQueryTest {
 
         var actualHeaders = selectQuery.buildAdditionalHeaders();
 
-        Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("0-10"), actualHeaders.get("Range"));
+        Assertions.assertFalse(actualHeaders.isEmpty());
+        Assertions.assertEquals(List.of("0-10"), actualHeaders.get().get("Range"));
     }
 }

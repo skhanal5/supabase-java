@@ -1,6 +1,6 @@
 package com.skhanal5.models;
 
-import com.skhanal5.constants.HeaderConstants;
+import com.skhanal5.constants.HeaderType;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -110,10 +110,8 @@ public class DeleteQuery implements Query{
      *
      * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
      */
-    public LinkedHashMap<String, List<String>> buildQueryParams() {
-        var map = new LinkedHashMap<String, List<String>>();
-        filter.addFiltersOntoQueryParams(map);
-        return map;
+    public Optional<Map<String, String>> buildQueryParams() {
+        return Optional.of(filter.convertFiltersToQueryParams());
     }
 
     /**
@@ -122,9 +120,9 @@ public class DeleteQuery implements Query{
      *
      * @return A Consumer<HttpHeaders> representing additional headers to pass in
      */
-    public Optional<Map<String, List<String>>> buildAdditionalHeaders() {
+    public Optional<Map<String, String>> buildAdditionalHeaders() {
         if (this.select) {
-            return Optional.of(HeaderConstants.RETRIEVE_RESPONSE_VALUES);
+            return Optional.of(HeaderType.RETRIEVE_RESPONSE_VALUES);
         }
         return Optional.empty();
     }

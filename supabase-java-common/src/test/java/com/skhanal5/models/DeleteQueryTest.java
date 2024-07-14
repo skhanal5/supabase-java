@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DeleteQueryTest {
 
@@ -58,7 +59,7 @@ public class DeleteQueryTest {
                 .build();
 
         var actualHeaders= deleteQuery.buildAdditionalHeaders();
-        Assertions.assertTrue(actualHeaders.isEmpty());
+        Assertions.assertEquals(Optional.empty(), actualHeaders);
     }
 
     @Test
@@ -70,7 +71,7 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = deleteQuery.buildAdditionalHeaders();
+        var actualHeaders = deleteQuery.buildAdditionalHeaders().get();
         Assertions.assertNotNull(actualHeaders);
         Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
     }

@@ -19,32 +19,42 @@ public class SupabaseHttpRequestSender<T> {
 
     String table;
 
-    LinkedHashMap<String, List<String>> queryParameters;
+    Map<String,String> queryParameters;
 
-    Optional<Map<String, List<String>>> headers;
+    Optional<Map<String, String>> headers;
 
     ObjectMapper mapper;
 
     Class<T> responseType;
 
+    String baseURI;
 
-    public SupabaseHttpRequestSender(HttpClient client, Map<String,String> defaultHeaders, Query query, Class<T> responseType) {
+
+    public SupabaseHttpRequestSender(String baseURI,
+                                     HttpClient client,
+                                     Map<String,String> defaultHeaders,
+                                     Query query,
+                                     Class<T> responseType) {
+        this.baseURI = baseURI;
         this.client = client;
         this.table = query.getTable();
-        this.queryParameters = query.buildQueryParams(); //combine queryParameters
+        this.queryParameters = mergeQueryParameters(defaultHeaders, query.buildQueryParams()); //combine queryParameters
         this.headers = query.buildAdditionalHeaders();
+        this.responseType = responseType;
     }
 
-    private Map<String,String> mergeQueryParameters(Optional<Map<String, List<String>>) {
-
+    private Map<String,String> mergeQueryParameters(Map<String,String> defaultHeaders, Optional<Map<String, String>> otherQueryParams) {
+        if (otherQueryParams.isPresent()) {
+            var otherQueryParamsUnwrapped = otherQueryParams.get();
+            defaultHeaders.putAll(otherQueryParamsUnwrapped);
+        }
+        return defaultHeaders;
     }
 
     public CompletionStage<T> invokeGETRequest() {
-        HttpClient.newBuilder().
-        var requestBuilder = new SupabaseHttpRequest();
+        var request = new SupabaseHttpRequest(baseURI, table, queryParameters, headers);
         return client
-                .
-                .sendAsync(request, BodyHandlers.ofString())
+                .sendAsync(request.toHttpRequest(), BodyHandlers.ofString())
                 .thenApply(this::deserializeIntoPOJO); //process into responseType
     }
 

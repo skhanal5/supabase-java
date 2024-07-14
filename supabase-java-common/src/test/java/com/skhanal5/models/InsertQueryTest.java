@@ -54,7 +54,7 @@ public class InsertQueryTest {
                 .build();
 
         var actualHeaders = insertQuery.buildAdditionalHeaders();
-        Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
+        Assertions.assertFalse(actualHeaders.isEmpty());
+        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
     }
 }

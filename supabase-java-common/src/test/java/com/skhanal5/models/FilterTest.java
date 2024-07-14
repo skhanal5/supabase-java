@@ -1,6 +1,6 @@
 package com.skhanal5.models;
 
-import com.skhanal5.constants.FilterConstants;
+import com.skhanal5.constants.FilterType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,16 +39,16 @@ class FilterTest {
         var filterData = filter.getFilterData();
         Assertions.assertFalse(filterData.isEmpty());
         var filterKeys = List.of(
-                FilterConstants.EQUALS,
-                FilterConstants.GREATER_THAN,
-                FilterConstants.LESS_THAN,
-                FilterConstants.GREATER_THAN_OR_EQUALS,
-                FilterConstants.LESS_THAN_OR_EQUALS,
-                FilterConstants.LIKE,
-                FilterConstants.I_LIKE,
-                FilterConstants.IS,
-                FilterConstants.IN,
-                FilterConstants.NOT_EQUALS);
+                FilterType.EQUALS,
+                FilterType.GREATER_THAN,
+                FilterType.LESS_THAN,
+                FilterType.GREATER_THAN_OR_EQUALS,
+                FilterType.LESS_THAN_OR_EQUALS,
+                FilterType.LIKE,
+                FilterType.I_LIKE,
+                FilterType.IS,
+                FilterType.IN,
+                FilterType.NOT_EQUALS);
         for (String key: filterKeys) {
             Assertions.assertNotNull(filterData.get(key));
         }
@@ -70,6 +70,7 @@ class FilterTest {
                 .greaterThan("2", 0)
                 .build();
         filter.addFiltersOntoQueryParams(queryParams);
+        System.out.println(queryParams);
         Assertions.assertFalse(queryParams.isEmpty());
         Assertions.assertEquals(2, queryParams.size());
     }
