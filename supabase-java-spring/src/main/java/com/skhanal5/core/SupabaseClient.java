@@ -8,12 +8,13 @@ import com.skhanal5.models.UpdateQuery;
 import lombok.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -56,9 +57,8 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
-        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        var queryParams = toMultiValueMap(query.buildQueryParams());
+        var headers = constructHttpHeaders(query.buildAdditionalHeaders());
         return this.makeSelectAPICall(query.getTable(),queryParams, headers, responseType);
     }
 
@@ -76,8 +76,7 @@ public class SupabaseClient {
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToInsert();
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
-        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
+        var headers = constructHttpHeaders(query.buildAdditionalHeaders());
         return this.makeInsertDBCall(query.getTable(), requestBody, headers, responseType);
     }
 
@@ -95,9 +94,8 @@ public class SupabaseClient {
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
         var requestBody = query.getValuesToUpdate();
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
-        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
-        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
+        var headers = constructHttpHeaders(query.buildAdditionalHeaders());
+        var queryParams = toMultiValueMap(query.buildQueryParams());
         return this.makeUpdateDBCall(query.getTable(), headers, queryParams, requestBody, responseType);
     }
 
@@ -114,9 +112,8 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var additionalHeaders = CollectionUtils.toMultiValueMap(query.buildAdditionalHeaders());
-        Consumer<HttpHeaders> headers = bulkHeaders -> bulkHeaders.addAll(additionalHeaders);
-        var queryParams = CollectionUtils.toMultiValueMap(query.buildQueryParams());
+        var headers = constructHttpHeaders(query.buildAdditionalHeaders());
+        var queryParams = toMultiValueMap(query.buildQueryParams());
         return this.makeDeleteAPICall(query.getTable(), headers, queryParams, responseType);
     }
 
@@ -199,6 +196,18 @@ public class SupabaseClient {
                 .bodyToMono(responseType)
                 .block();
     }
+
+    private Consumer<HttpHeaders> constructHttpHeaders(Optional<Map<String,String>> additionalHeaders) {
+        MultiValueMap<String, String> headersToMap = toMultiValueMap(additionalHeaders);
+        return bulkHeaders -> bulkHeaders.addAll(headersToMap);
+    }
+
+    private MultiValueMap<String,String> toMultiValueMap(Optional<Map<String,String>> map) {
+        MultiValueMap<String, String> remapped = new LinkedMultiValueMap<>();
+        map.ifPresent(mapUnwrapped -> mapUnwrapped.forEach(remapped::add));
+        return remapped;
+    }
+
 
     /**
      * The most basic way of making an instance of the SupabaseClient. Utilizes built-in object mapper that

@@ -106,4 +106,9 @@ public class InsertQuery implements Query{
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<List<Map<String, Object>>> buildRequestBody() {
+        return Optional.of(valuesToInsert);
+    }
 }

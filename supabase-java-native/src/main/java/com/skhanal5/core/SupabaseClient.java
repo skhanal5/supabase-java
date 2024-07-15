@@ -12,6 +12,7 @@ import lombok.*;
 
 import java.net.http.HttpClient;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The main entry point to instantiation an instance of SupabaseClient and
@@ -35,13 +36,6 @@ public class SupabaseClient {
 
     private static final String ENDPOINT_PATH = "/rest/v1/";
 
-    private SupabaseClient(HttpClient client, String baseURI, Map<String,String> defaultHeaders) {
-        this.client = client;
-        this.baseURI = baseURI;
-        this.defaultHeaders = defaultHeaders;
-        this.mapper = new ObjectMapper();
-    }
-
     private SupabaseClient(HttpClient client, String baseURI, Map<String,String> defaultHeaders, ObjectMapper mapper) {
         this.client = client;
         this.baseURI = baseURI;
@@ -59,11 +53,12 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        // make RequestSender
-        // return call
-        var sender = new SupabaseHttpRequestSender<>(client, this.defaultHeaders, query);
-        sender.invokeGETRequest();
-//        return this.makeSelectAPICall(query.getTable(),queryParams, additionalHeaders, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        try {
+            return sender.invokeGETRequest().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -79,9 +74,12 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
-        var requestBody = query.getValuesToInsert();
-        var additionalHeaders = query.buildAdditionalHeaders();;
-        return this.makeInsertDBCall(query.getTable(), requestBody, additionalHeaders, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        try {
+            return sender.invokeGETRequest().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -97,10 +95,12 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
-        var requestBody = query.getValuesToUpdate();
-        var additionalHeaders = query.buildAdditionalHeaders();
-        var queryParams = query.buildQueryParams();
-        return this.makeUpdateDBCall(query.getTable(), additionalHeaders, queryParams, requestBody, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        try {
+            return sender.invokePOSTRequest().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -116,9 +116,12 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var additionalHeaders = query.buildAdditionalHeaders();
-        var queryParams = query.buildQueryParams();
-        return this.makeDeleteAPICall(query.getTable(), additionalHeaders, queryParams, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        try {
+            return sender.invokePOSTRequest().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -130,9 +133,7 @@ public class SupabaseClient {
      * @return an instance of a SupabaseClient
      */
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
-        var baseUrl = databaseUrl + ENDPOINT_PATH;
-        var client = HttpClient.newHttpClient();
-        return new SupabaseClient(client, baseUrl, clientHeaders);
+       return newInstance(databaseUrl, serviceKey, new ObjectMapper());
     }
 
     /**

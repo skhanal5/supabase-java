@@ -1,5 +1,7 @@
 package com.skhanal5.core.internal;
 
+import com.skhanal5.models.Query;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.util.List;
@@ -18,19 +20,32 @@ public class SupabaseHttpRequest {
 
     Optional<Map<String, String>> queryParameters;
 
-    public SupabaseHttpRequest(String baseURI, String table, Map<String, String> headers, Optional<Map<String, String>> queryParameters) {
+    Optional<List<Map<String,Object>>> requestBody;
+
+    public SupabaseHttpRequest(String baseURI, String table, Map<String, String> headers, Query query) {
         this.baseURI = baseURI;
         this.table = table;
         this.headers = headers;
-        this.queryParameters = queryParameters;
+        this.queryParameters = query.buildQueryParams();
+        this.requestBody = query.buildRequestBody();
     }
 
-    public HttpRequest toHttpRequest() {
+    public HttpRequest toHttpGetRequest() {
         var requestBuilder = HttpRequest.newBuilder();
         var uri = buildURI(baseURI, table, queryParameters);
         headers.forEach((key, value) -> requestBuilder.setHeader(key, value.toString()));
         return requestBuilder
                 .uri(uri)
+                .build();
+    }
+
+    public HttpRequest toHttpPostRequest() {
+        var requestBuilder = HttpRequest.newBuilder();
+        var uri = buildURI(baseURI, table, queryParameters);
+        headers.forEach((key, value) -> requestBuilder.setHeader(key, value.toString()));
+        return requestBuilder
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                 .build();
     }
 

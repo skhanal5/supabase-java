@@ -126,4 +126,9 @@ public class DeleteQuery implements Query{
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<List<Map<String, Object>>> buildRequestBody() {
+        return Optional.empty();
+    }
 }
