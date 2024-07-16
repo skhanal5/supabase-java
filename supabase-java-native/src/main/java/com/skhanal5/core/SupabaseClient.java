@@ -53,7 +53,7 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
             return sender.invokeGETRequest().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -74,7 +74,7 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
             return sender.invokeGETRequest().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -95,7 +95,7 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
             return sender.invokePOSTRequest().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -116,7 +116,7 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType);
+        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
             return sender.invokePOSTRequest().get();
         } catch (InterruptedException | ExecutionException e) {
