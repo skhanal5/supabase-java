@@ -26,15 +26,17 @@
 
     <dependencies>
 
+        <!-- common dependency -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>supabase-java-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
         </dependency>
 
         <!-- Testing dependencies -->
