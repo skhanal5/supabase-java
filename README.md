@@ -4,11 +4,11 @@
 This project establishes a Java based client to interact with a Supabase database. Currently, Supabase does not offer a
 Java based library for its database, so I tried to make one instead.
 
-### Supabase Java Native (*To be developed*)
+### Supabase Java Native
 A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of 
 Apache HTTPClient to interact with the Supabase database API. 
 
-### Supabase Java Spring (*In development*)
+### Supabase Java Spring
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
 the hood to interact with the Supabase database API.
 

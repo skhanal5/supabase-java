@@ -1,8 +1,6 @@
 package com.skhanal5.core.internal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skhanal5.models.Query;
 
@@ -12,11 +10,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 
 public class SupabaseHttpRequestSender<T> {
@@ -26,6 +21,8 @@ public class SupabaseHttpRequestSender<T> {
     String table;
 
     Optional<Map<String,String>> queryParameters;
+
+    Optional<List<Map<String, Object>>> requestBody;
 
     Map<String, String> headers;
 
@@ -46,60 +43,109 @@ public class SupabaseHttpRequestSender<T> {
         this.client = client;
         this.table = query.getTable();
         this.queryParameters = query.buildQueryParams();
-        this.headers = defaultHeaders;
+        this.requestBody = query.buildRequestBody();
+        this.headers = mergeHeaders(defaultHeaders, query.buildAdditionalHeaders());
         this.responseType = responseType;
         this.mapper = mapper;
     }
 
 
     public CompletableFuture<T> invokeGETRequest() {
-        var request = toGetRequest(baseURI, table, headers, queryParameters);
+        var request = toGetRequest(baseURI, table, headers, queryParameters.orElse(Map.of()));
         return client
                 .sendAsync(request, BodyHandlers.ofString())
                 .thenApply(this::deserializeIntoPOJO); //process into responseType
     }
 
     public CompletableFuture<T> invokePOSTRequest() {
-        var request = toPostRequest(baseURI,table, headers, queryParameters, null);
+        headers.put("Content-Type", "application/json");
+        var request = toPostRequest(baseURI,table, headers, queryParameters.orElse(Map.of()), requestBody.orElse(List.of()));
         return client
                 .sendAsync(request, BodyHandlers.ofString())
                 .thenApply(this::deserializeIntoPOJO); //process into responseType
     }
 
-    public HttpRequest toGetRequest(String baseURI, String table, Map<String, String> headers, Optional<Map<String, String>> queryParameters) {
+    public CompletableFuture<T> invokePATCHRequest() {
+        headers.put("Content-Type", "application/json");
+        var request = toPatchRequest(baseURI,table, headers, queryParameters.orElse(Map.of()), requestBody.orElse(List.of()));
+        return client
+                .sendAsync(request, BodyHandlers.ofString())
+                .thenApply(this::deserializeIntoPOJO); //process into responseType
+    }
+
+    public CompletableFuture<T> invokeDELETERequest() {
+        var request = toDeleteRequest(baseURI,table, headers, queryParameters.orElse(Map.of()));
+        return client
+                .sendAsync(request, BodyHandlers.ofString())
+                .thenApply(this::deserializeIntoPOJO); //process into responseType
+    }
+
+    private HttpRequest toGetRequest(String baseURI, String table, Map<String, String> headers, Map<String, String> queryParameters) {
         var requestBuilder = HttpRequest.newBuilder();
         var uri = buildURI(baseURI, table, queryParameters);
-        System.out.println(uri);
-        headers.forEach((key, value) -> requestBuilder.setHeader(key, value.toString()));
+        headers.forEach(requestBuilder::setHeader);
         return requestBuilder
                 .uri(uri)
                 .GET()
                 .build();
     }
 
-    public HttpRequest toPostRequest(String baseURI, String table, Map<String, String> headers, Optional<Map<String, String>> queryParameters, Map<String,String> requestBody) {
+    private HttpRequest toPatchRequest(String baseURI, String table, Map<String, String> headers, Map<String, String> queryParameters, List<Map<String,Object>> requestBody) {
         var requestBuilder = HttpRequest.newBuilder();
         var uri = buildURI(baseURI, table, queryParameters);
-        headers.forEach((key, value) -> requestBuilder.setHeader(key, value.toString()));
+        headers.forEach(requestBuilder::setHeader);
+        String requestBodyToJsonString = null;
+        try {
+            requestBodyToJsonString = this.mapper.writeValueAsString(requestBody);
+            return requestBuilder
+                    .uri(uri)
+                    .method("PATCH",  HttpRequest.BodyPublishers.ofString(requestBodyToJsonString))
+                    .build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    private HttpRequest toPostRequest(String baseURI, String table, Map<String, String> headers, Map<String, String> queryParameters, List<Map<String,Object>> requestBody) {
+        var requestBuilder = HttpRequest.newBuilder();
+        var uri = buildURI(baseURI, table, queryParameters);
+        headers.forEach(requestBuilder::setHeader);
+        String requestBodyToJsonString = null;
+        try {
+            requestBodyToJsonString = this.mapper.writeValueAsString(requestBody);
+            return requestBuilder
+                    .uri(uri)
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBodyToJsonString))
+                    .build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private HttpRequest toDeleteRequest(String baseURI, String table, Map<String, String> headers, Map<String, String> queryParameters) {
+        var requestBuilder = HttpRequest.newBuilder();
+        var uri = buildURI(baseURI, table, queryParameters);
+        headers.forEach(requestBuilder::setHeader);
         return requestBuilder
                 .uri(uri)
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                .DELETE()
                 .build();
     }
 
-    public static URI buildURI(String baseURI, String path, Optional<Map<String, String>> queryParameters) {
-        if (queryParameters.isPresent()) {
-            String fullURI = baseURI + path + "?" + serializeQueryParameters(queryParameters.get());
-            return URI.create(fullURI);
-        }
-        String fullURI = baseURI + path;
+    private static URI buildURI(String baseURI, String path, Map<String, String> queryParameters) {
+        String fullURI = baseURI + path + "?" + serializeQueryParameters(queryParameters);
         return URI.create(fullURI);
     }
 
-    public T deserializeIntoPOJO(HttpResponse<String> jsonResponse) {
-        if (jsonResponse.statusCode() >= 200 || jsonResponse.statusCode() <= 200) {
+    private T deserializeIntoPOJO(HttpResponse<String> jsonResponse) {
+        if (jsonResponse.statusCode() >= 200 || jsonResponse.statusCode() < 300) {
             var jsonBody = jsonResponse.body();
-            jsonBody = jsonBody.substring(1,jsonBody.length()-1);
+
+            if (jsonBody != null || jsonBody.length() > 1) {
+                jsonBody = jsonBody.substring(1,jsonBody.length()-1);
+            }
 
             if (responseType == String.class) {
                 return responseType.cast(jsonBody);
@@ -113,6 +159,12 @@ public class SupabaseHttpRequestSender<T> {
         }
         //TODO: Handle other status codes other than 200's
         return null;
+    }
+
+    private Map<String,String> mergeHeaders(Map<String,String> defaultHeaders, Optional<Map<String,String>> additionalHeaders) {
+        var mergedHeaders = new HashMap<>(defaultHeaders);
+        additionalHeaders.ifPresent(mergedHeaders::putAll);
+        return mergedHeaders;
     }
 
     private static StringJoiner serializeQueryParameters(Map<String, String> queryParameters) {

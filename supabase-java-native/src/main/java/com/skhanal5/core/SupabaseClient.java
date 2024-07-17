@@ -76,7 +76,7 @@ public class SupabaseClient {
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
         var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokeGETRequest().get();
+            return sender.invokePOSTRequest().get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -97,7 +97,7 @@ public class SupabaseClient {
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
         var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokePOSTRequest().get();
+            return sender.invokePATCHRequest().get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -118,7 +118,7 @@ public class SupabaseClient {
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
         var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokePOSTRequest().get();
+            return sender.invokeDELETERequest().get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
