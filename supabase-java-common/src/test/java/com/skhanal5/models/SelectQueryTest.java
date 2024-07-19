@@ -4,7 +4,6 @@ import com.skhanal5.models.SelectQuery.SelectQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,34 +40,38 @@ class SelectQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsMinimal() {
+    void testBuildQueryParamsMinimal() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")
                 .select("bar")
                 .build();
 
-        var expectedQueryParams = Map.of("select", Collections.singletonList("bar"));
+        var expectedQueryParams = Optional.of(Map.of("select", "bar"));
+
         var actualQueryParams = selectQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
     @Test
-    void testConvertToQueryParamsWithFilter() {
+    void testBuildQueryParamsWithValues() {
         var selectQuery = new SelectQueryBuilder()
                 .from("foo")
                 .select("bar")
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"), "select", Collections.singletonList("bar"));
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin",
+                                                    "select", "bar"));
 
         var actualQueryParams = selectQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
     @Test
-    void testAddPaginationHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")
@@ -82,7 +85,7 @@ class SelectQueryTest {
     }
 
     @Test
-    void testAddPaginationHeaderWithPagination() {
+    void testBuildAdditionalHeadersWithValues() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")
@@ -92,7 +95,20 @@ class SelectQueryTest {
 
         var actualHeaders = selectQuery.buildAdditionalHeaders();
 
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("0-10"), actualHeaders.get().get("Range"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals("0-10", actualHeaders.get().get("Range"));
     }
+
+    @Test
+    void testBuildRequestBody() {
+        var selectQuery = new SelectQuery
+                .SelectQueryBuilder()
+                .from("foo")
+                .select("bar")
+                .range(0,10)
+                .build();
+        var requestBody = selectQuery.buildRequestBody();
+        Assertions.assertTrue(requestBody.isEmpty());
+    }
+
 }

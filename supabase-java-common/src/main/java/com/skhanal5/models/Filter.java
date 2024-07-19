@@ -13,7 +13,6 @@ import java.util.Map.Entry;
  * @see <a href="https://supabase.com/docs/reference/javascript/using-filters"> Supabase JavaScript's supported filters </a>
  *
  * <p> Note: not all database filters are supported by this library. It only covers the minimum functionality for filtering.
- * </p>
  */
 @Value
 @Getter(AccessLevel.PACKAGE)
@@ -152,30 +151,35 @@ public class Filter {
         }
     }
 
-    /*
-        TODO: add comment about why we represent this map in this way in relation to query params for
-        Supabase Database API
+    /**
+     *  Converts the Filter into query parameters that can be used by the client when sending a request.
+     *  <br>
+     *  <br>
+     *  Filters are represented as query parameters in the request to the Supabase Database API.
+     *  It is formatted as a key-value pair in the following format: (column, filterOperation.valueToFilter)
+     * @return a {@link Map} of query parameters, can be empty if there are no Filters
      */
     Map<String,String> convertFiltersToQueryParams() {
         var queryParams = new HashMap<String,String>();
-
-        // TODO: please fix this, this is hideous
         filterData.forEach((filterType,filterColumnAndValue) -> {
             Entry<String, Object> columnToFilterValue = filterColumnAndValue.entrySet().iterator().next();
             var filterColumn = columnToFilterValue.getKey();
             var filterValue = columnToFilterValue.getValue();
-            var filterValueString = "";
-            if (filterValue instanceof List<?>) {
-                List<String> list = (List<String>) filterValue;
-                var stringifyList = String.join(",", list);
-                filterValueString = "(" + stringifyList + ")";
-            } else {
-                filterValueString = filterValue.toString();
-            }
+            var filterValueString = stringifyFilterValue(filterValue);
             queryParams.put(filterColumn, filterType + filterValueString);
         });
 
         return queryParams;
+    }
+
+    private String stringifyFilterValue(Object filterValue) {
+        if (filterValue instanceof List<?>) {
+            List<String> list = (List<String>) filterValue;
+            var stringifyList = String.join(",", list);
+            return "(" + stringifyList + ")";
+        } else {
+            return filterValue.toString();
+        }
     }
 
 }

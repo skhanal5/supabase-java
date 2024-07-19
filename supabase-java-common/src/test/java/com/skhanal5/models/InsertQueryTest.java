@@ -1,5 +1,6 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.InsertQuery.InsertQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class InsertQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var insertQuery = new InsertQuery
                 .InsertQueryBuilder()
                 .from("foo")
@@ -46,7 +47,7 @@ public class InsertQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testBuildAdditionalHeadersWithValues() {
         var insertQuery = new InsertQueryBuilder()
                 .from("foo")
                 .insert(Map.of("bar", "baz"))
@@ -54,7 +55,33 @@ public class InsertQueryTest {
                 .build();
 
         var actualHeaders = insertQuery.buildAdditionalHeaders();
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
+    }
+
+    @Test
+    void testBuildRequestBody() {
+        var insertQuery = new InsertQuery
+                .InsertQueryBuilder()
+                .from("foo")
+                .insert(Map.of("bar", "baz"))
+                .build();
+
+        var actualRequestBody = insertQuery.buildRequestBody();
+        var expectedRequestBody = List.of(Map.of("bar","baz"));
+        Assertions.assertTrue(actualRequestBody.isPresent());
+        Assertions.assertEquals(expectedRequestBody,actualRequestBody.get());
+    }
+
+    @Test
+    void testBuildQueryParams() {
+        var insertQuery = new InsertQuery
+                .InsertQueryBuilder()
+                .from("foo")
+                .insert(Map.of("bar", "baz"))
+                .build();
+
+        var actualQueryParams = insertQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isEmpty());
     }
 }

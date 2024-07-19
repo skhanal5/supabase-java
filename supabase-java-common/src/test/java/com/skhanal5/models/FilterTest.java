@@ -4,7 +4,6 @@ import com.skhanal5.constants.FilterType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,21 +55,18 @@ class FilterTest {
 
     @Test
     void testAddFiltersOntoQueryParamsMinimal() {
-        LinkedHashMap<String, List<String>> queryParams = new LinkedHashMap<>();
         var filter = new Filter.FilterBuilder().build();
-        filter.addFiltersOntoQueryParams(queryParams);
+        var queryParams = filter.convertFiltersToQueryParams();
         Assertions.assertTrue(queryParams.isEmpty());
     }
 
     @Test
     void testAddFiltersOntoQueryParamsWithValues() {
-        LinkedHashMap<String, List<String>> queryParams = new LinkedHashMap<>();
         var filter = new Filter.FilterBuilder()
                 .equals("1", "")
                 .greaterThan("2", 0)
                 .build();
-        filter.addFiltersOntoQueryParams(queryParams);
-        System.out.println(queryParams);
+        var queryParams = filter.convertFiltersToQueryParams();
         Assertions.assertFalse(queryParams.isEmpty());
         Assertions.assertEquals(2, queryParams.size());
     }

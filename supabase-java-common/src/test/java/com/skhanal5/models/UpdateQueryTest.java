@@ -1,11 +1,13 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.UpdateQuery.UpdateQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UpdateQueryTest {
 
@@ -35,7 +37,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsMinimal() {
+    void testBuildQueryParamsMinimal() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -43,13 +45,13 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().build())
                 .build();
 
-        var expectedQueryParams = Map.of();
         var actualQueryParams = updateQuery.buildQueryParams();
-        Assertions.assertEquals(expectedQueryParams, actualQueryParams);
+        Assertions.assertTrue(actualQueryParams.isPresent());
+        Assertions.assertEquals(Optional.of(Map.of()), actualQueryParams);
     }
 
     @Test
-    void testConvertToQueryParamsWithValues() {
+    void testBuildQueryParamsWithValues() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -57,14 +59,15 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
-
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin"));
         var actualQueryParams = updateQuery.buildQueryParams();
+
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalMinimal() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -78,7 +81,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testBuildAdditionalHeaders() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -88,7 +91,22 @@ public class UpdateQueryTest {
 
         var actualHeaders = updateQuery.buildAdditionalHeaders();
 
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
+    }
+
+    @Test
+    void testBuildRequestBody() {
+        var updateQuery = new UpdateQueryBuilder()
+                .from("foo")
+                .update(Map.of("baz", "bar"))
+                .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
+                .select()
+                .build();
+
+        var actualRequestBody = updateQuery.buildRequestBody();
+        var expectedRequestBody = List.of(Map.of("baz","bar"));
+        Assertions.assertTrue(actualRequestBody.isPresent());
+        Assertions.assertEquals(expectedRequestBody,actualRequestBody.get());
     }
 }

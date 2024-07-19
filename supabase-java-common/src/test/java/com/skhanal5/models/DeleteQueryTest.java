@@ -1,10 +1,10 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.DeleteQuery.DeleteQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public class DeleteQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsWithValues() {
+    void testBuildQueryParamsWithValues() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()
@@ -44,14 +44,15 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
-
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin"));
         var actualQueryParams = deleteQuery.buildQueryParams();
+
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()
@@ -63,7 +64,7 @@ public class DeleteQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testAddBuildAdditionalHeadersWithValues() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()
@@ -71,9 +72,20 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = deleteQuery.buildAdditionalHeaders().get();
-        Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
+        var actualHeaders = deleteQuery.buildAdditionalHeaders();
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
+    }
+
+    @Test
+    void testBuildRequestBody() {
+        var deleteQuery = new DeleteQueryBuilder()
+                .from("foo")
+                .delete()
+                .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
+                .build();
+        var requestBody = deleteQuery.buildRequestBody();
+        Assertions.assertTrue(requestBody.isEmpty());
     }
 
 }
