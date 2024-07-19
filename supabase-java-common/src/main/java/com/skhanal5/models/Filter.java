@@ -151,14 +151,16 @@ public class Filter {
         }
     }
 
-    /*
-        TODO: add comment about why we represent this map in this way in relation to query params for
-        Supabase Database API
+    /**
+     *  Converts the Filter into query parameters that can be used by the client when sending a request.
+     *  <br>
+     *  <br>
+     *  Filters are represented as query parameters in the request to the Supabase Database API.
+     *  It is formatted as a key-value pair in the following format: (column, filterOperation.valueToFilter)
+     * @return a {@link Map} of query parameters, can be empty if there are no Filters
      */
     Map<String,String> convertFiltersToQueryParams() {
         var queryParams = new HashMap<String,String>();
-
-
         filterData.forEach((filterType,filterColumnAndValue) -> {
             Entry<String, Object> columnToFilterValue = filterColumnAndValue.entrySet().iterator().next();
             var filterColumn = columnToFilterValue.getKey();
