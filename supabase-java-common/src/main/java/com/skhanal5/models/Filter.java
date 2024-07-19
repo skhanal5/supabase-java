@@ -158,23 +158,26 @@ public class Filter {
     Map<String,String> convertFiltersToQueryParams() {
         var queryParams = new HashMap<String,String>();
 
-        // TODO: please fix this, this is hideous
+
         filterData.forEach((filterType,filterColumnAndValue) -> {
             Entry<String, Object> columnToFilterValue = filterColumnAndValue.entrySet().iterator().next();
             var filterColumn = columnToFilterValue.getKey();
             var filterValue = columnToFilterValue.getValue();
-            var filterValueString = "";
-            if (filterValue instanceof List<?>) {
-                List<String> list = (List<String>) filterValue;
-                var stringifyList = String.join(",", list);
-                filterValueString = "(" + stringifyList + ")";
-            } else {
-                filterValueString = filterValue.toString();
-            }
+            var filterValueString = stringifyFilterValue(filterValue);
             queryParams.put(filterColumn, filterType + filterValueString);
         });
 
         return queryParams;
+    }
+
+    private String stringifyFilterValue(Object filterValue) {
+        if (filterValue instanceof List<?>) {
+            List<String> list = (List<String>) filterValue;
+            var stringifyList = String.join(",", list);
+            return "(" + stringifyList + ")";
+        } else {
+            return filterValue.toString();
+        }
     }
 
 }
