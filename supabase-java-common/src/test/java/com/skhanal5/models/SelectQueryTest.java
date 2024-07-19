@@ -40,7 +40,7 @@ class SelectQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsMinimal() {
+    void testBuildQueryParamsMinimal() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")
@@ -55,7 +55,7 @@ class SelectQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsWithFilter() {
+    void testBuildQueryParamsWithValues() {
         var selectQuery = new SelectQueryBuilder()
                 .from("foo")
                 .select("bar")
@@ -71,7 +71,7 @@ class SelectQueryTest {
     }
 
     @Test
-    void testAddPaginationHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")
@@ -85,7 +85,7 @@ class SelectQueryTest {
     }
 
     @Test
-    void testAddPaginationHeaderWithPagination() {
+    void testBuildAdditionalHeadersWithValues() {
         var selectQuery = new SelectQuery
                 .SelectQueryBuilder()
                 .from("foo")

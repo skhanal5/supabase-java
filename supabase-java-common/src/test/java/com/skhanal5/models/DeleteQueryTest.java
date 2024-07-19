@@ -36,7 +36,7 @@ public class DeleteQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsWithValues() {
+    void testBuildQueryParamsWithValues() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()
@@ -52,7 +52,7 @@ public class DeleteQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()
@@ -64,7 +64,7 @@ public class DeleteQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testAddBuildAdditionalHeadersWithValues() {
         var deleteQuery = new DeleteQueryBuilder()
                 .from("foo")
                 .delete()

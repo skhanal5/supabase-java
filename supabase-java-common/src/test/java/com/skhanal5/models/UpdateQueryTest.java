@@ -37,7 +37,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsMinimal() {
+    void testBuildQueryParamsMinimal() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -51,7 +51,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testConvertToQueryParamsWithValues() {
+    void testBuildQueryParamsWithValues() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -67,7 +67,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalMinimal() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
@@ -81,7 +81,7 @@ public class UpdateQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testBuildAdditionalHeaders() {
         var updateQuery = new UpdateQueryBuilder()
                 .from("foo")
                 .update(Map.of("baz", "bar"))
