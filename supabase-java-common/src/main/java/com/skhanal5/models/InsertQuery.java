@@ -8,7 +8,8 @@ import java.util.*;
 
 /**
  * Represents a query that is used to insert rows from a Supabase Database table.
- *
+ * <br>
+ * <br>
  * For convenience, use the builder that is provided to provide the details of
  * what table and rows you want to insert from.
  * @see InsertQueryBuilder
@@ -89,17 +90,24 @@ public class InsertQuery implements Query{
         }
     }
 
+    /**
+     * Converts this InsertQuery into query parameters, so we can form a proper
+     * API call with the correct parameters.
+     *
+     * @return An {@link Optional} since this request doesn't require additional parameters
+     */
     @Override
     public Optional<Map<String, String>> buildQueryParams() {
         return Optional.empty();
     }
 
     /**
-     * In case select() is invoked, this method will add a header to the WebClient
+     * In case select() is invoked, this method will add a header to the client
      * that will return the inserted contents in the response body.
      *
-     * @return A Consumer<HttpHeaders> representing additional headers to pass in
+     * @return A {@link Optional} representing additional headers to pass in
      */
+    @Override
     public Optional<Map<String, String>> buildAdditionalHeaders() {
         if (this.select) {
            return Optional.of(HeaderType.RETRIEVE_RESPONSE_VALUES);
@@ -107,6 +115,10 @@ public class InsertQuery implements Query{
         return Optional.empty();
     }
 
+    /**
+     * Represents a request body.
+     * @return {@link Optional} since this UPDATE request doesn't have a body
+     */
     @Override
     public Optional<List<Map<String, Object>>> buildRequestBody() {
         return Optional.of(valuesToInsert);

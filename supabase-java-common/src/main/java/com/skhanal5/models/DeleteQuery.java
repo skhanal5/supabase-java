@@ -8,7 +8,8 @@ import java.util.*;
 
 /**
  * Represents a query that is used to delete rows from a Supabase Database table.
- *
+ * <br>
+ * <br>
  * For convenience, use the builder that is provided to provide the details of
  * what table and rows you want to delete from.
  * @see DeleteQueryBuilder
@@ -105,21 +106,23 @@ public class DeleteQuery implements Query{
     }
 
     /**
-     * Converts this DeleteQuery into QueryParams, so we can form a proper
+     * Converts this DeleteQuery into query parameters, so we can form a proper
      * API call with the correct parameters.
      *
-     * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
+     * @return An {@link Optional} that represents the query parameters and is consumed by the client
      */
+    @Override
     public Optional<Map<String, String>> buildQueryParams() {
         return Optional.of(filter.convertFiltersToQueryParams());
     }
 
     /**
-     * In case select() is invoked, this method will add a header to the WebClient
+     * In case select() is invoked, this method will add a header to the client
      * that will return the deleted contents in the response body.
      *
-     * @return A Consumer<HttpHeaders> representing additional headers to pass in
+     * @return A {@link Optional} representing additional headers to pass in
      */
+    @Override
     public Optional<Map<String, String>> buildAdditionalHeaders() {
         if (this.select) {
             return Optional.of(HeaderType.RETRIEVE_RESPONSE_VALUES);
@@ -127,6 +130,10 @@ public class DeleteQuery implements Query{
         return Optional.empty();
     }
 
+    /**
+     * Represents a request body.
+     * @return {@link Optional} since this DELETE request doesn't have a body
+     */
     @Override
     public Optional<List<Map<String, Object>>> buildRequestBody() {
         return Optional.empty();

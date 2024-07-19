@@ -13,7 +13,6 @@ import java.util.Map.Entry;
  * @see <a href="https://supabase.com/docs/reference/javascript/using-filters"> Supabase JavaScript's supported filters </a>
  *
  * <p> Note: not all database filters are supported by this library. It only covers the minimum functionality for filtering.
- * </p>
  */
 @Value
 @Getter(AccessLevel.PACKAGE)

@@ -7,7 +7,8 @@ import java.util.*;
 
 /**
  * Represents a query that is used to select/search rows from a Supabase Database table.
- *
+ * <br>
+ * <br>
  * For convenience, use the builder that is provided to provide the details of
  * what table and rows you want to select from.
  * @see SelectQueryBuilder
@@ -107,11 +108,12 @@ public class SelectQuery implements Query{
     }
 
     /**
-     * Converts this SelectQuery into QueryParams, so we can form a proper
+     * Converts this SelectQuery into query parameters, so we can form a proper
      * API call with the correct parameters.
      *
-     * @return A MultiValueMap that represents the query parameters and is consumed by the WebClient
+     * @return A {@link Optional} that represents the query parameters and is consumed by the WebClient
      */
+    @Override
     public Optional<Map<String, String>> buildQueryParams() {
         var map = new HashMap<String, String>();
         map.put("select", String.join(",", this.columnsToSelect));
@@ -123,8 +125,9 @@ public class SelectQuery implements Query{
      * In case range() is invoked, this method will add a header to the WebClient
      * that will include pagination.
      *
-     * @return A Consumer<HttpHeaders> representing additional headers to pass in
+     * @return A {@link Optional} representing additional headers to pass in
      */
+    @Override
     public Optional<Map<String, String>> buildAdditionalHeaders() {
         if (pagination.isPresent()) {
             var paginationUnwrapped = pagination.get();
@@ -133,6 +136,10 @@ public class SelectQuery implements Query{
         return Optional.empty();
     }
 
+    /**
+     * Represents a request body.
+     * @return A {@link Optional} since this SELECT request doesn't have a body
+     */
     @Override
     public Optional<List<Map<String, Object>>> buildRequestBody() {
         return Optional.empty();

@@ -1,5 +1,9 @@
 package com.skhanal5.constants;
 
+/**
+ * Constants that represent each type of Filter. The constants
+ * are defined according to <a href=https://supabase.com/docs/guides/api/sql-to-rest> Supabase SQL to REST </a>.
+ */
 public class FilterType {
 
     public static final String EQUALS = "eq.";
