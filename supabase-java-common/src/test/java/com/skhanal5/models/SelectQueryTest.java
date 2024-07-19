@@ -4,7 +4,6 @@ import com.skhanal5.models.SelectQuery.SelectQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,8 +47,10 @@ class SelectQueryTest {
                 .select("bar")
                 .build();
 
-        var expectedQueryParams = Map.of("select", Collections.singletonList("bar"));
+        var expectedQueryParams = Optional.of(Map.of("select", "bar"));
+
         var actualQueryParams = selectQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -61,9 +62,11 @@ class SelectQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"), "select", Collections.singletonList("bar"));
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin",
+                                                    "select", "bar"));
 
         var actualQueryParams = selectQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -92,7 +95,7 @@ class SelectQueryTest {
 
         var actualHeaders = selectQuery.buildAdditionalHeaders();
 
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("0-10"), actualHeaders.get().get("Range"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals("0-10", actualHeaders.get().get("Range"));
     }
 }

@@ -1,11 +1,13 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.UpdateQuery.UpdateQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UpdateQueryTest {
 
@@ -43,9 +45,9 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().build())
                 .build();
 
-        var expectedQueryParams = Map.of();
         var actualQueryParams = updateQuery.buildQueryParams();
-        Assertions.assertEquals(expectedQueryParams, actualQueryParams);
+        Assertions.assertTrue(actualQueryParams.isPresent());
+        Assertions.assertEquals(Optional.of(Map.of()), actualQueryParams);
     }
 
     @Test
@@ -57,9 +59,10 @@ public class UpdateQueryTest {
                 .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
-
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin"));
         var actualQueryParams = updateQuery.buildQueryParams();
+
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -88,7 +91,7 @@ public class UpdateQueryTest {
 
         var actualHeaders = updateQuery.buildAdditionalHeaders();
 
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
     }
 }

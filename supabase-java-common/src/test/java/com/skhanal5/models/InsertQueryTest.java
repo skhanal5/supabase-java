@@ -1,5 +1,6 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.InsertQuery.InsertQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class InsertQueryTest {
                 .build();
 
         var actualHeaders = insertQuery.buildAdditionalHeaders();
-        Assertions.assertFalse(actualHeaders.isEmpty());
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get().get("Prefer"));
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
     }
 }

@@ -1,10 +1,10 @@
 package com.skhanal5.models;
 
+import com.skhanal5.constants.HeaderType;
 import com.skhanal5.models.DeleteQuery.DeleteQueryBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,9 +44,10 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var expectedQueryParams = Map.of("baz", List.of("eq.bin"));
-
+        var expectedQueryParams = Optional.of(Map.of("baz", "eq.bin"));
         var actualQueryParams = deleteQuery.buildQueryParams();
+
+        Assertions.assertTrue(actualQueryParams.isPresent());
         Assertions.assertEquals(expectedQueryParams, actualQueryParams);
     }
 
@@ -71,9 +72,9 @@ public class DeleteQueryTest {
                 .select()
                 .build();
 
-        var actualHeaders = deleteQuery.buildAdditionalHeaders().get();
-        Assertions.assertNotNull(actualHeaders);
-        Assertions.assertEquals(List.of("return=representation"), actualHeaders.get("Prefer"));
+        var actualHeaders = deleteQuery.buildAdditionalHeaders();
+        Assertions.assertTrue(actualHeaders.isPresent());
+        Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
     }
 
 }
