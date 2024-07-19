@@ -77,4 +77,15 @@ public class DeleteQueryTest {
         Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
     }
 
+    @Test
+    void testBuildRequestBody() {
+        var deleteQuery = new DeleteQueryBuilder()
+                .from("foo")
+                .delete()
+                .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
+                .build();
+        var requestBody = deleteQuery.buildRequestBody();
+        Assertions.assertTrue(requestBody.isEmpty());
+    }
+
 }

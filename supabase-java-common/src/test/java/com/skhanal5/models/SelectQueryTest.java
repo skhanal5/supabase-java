@@ -98,4 +98,17 @@ class SelectQueryTest {
         Assertions.assertTrue(actualHeaders.isPresent());
         Assertions.assertEquals("0-10", actualHeaders.get().get("Range"));
     }
+
+    @Test
+    void testBuildRequestBody() {
+        var selectQuery = new SelectQuery
+                .SelectQueryBuilder()
+                .from("foo")
+                .select("bar")
+                .range(0,10)
+                .build();
+        var requestBody = selectQuery.buildRequestBody();
+        Assertions.assertTrue(requestBody.isEmpty());
+    }
+
 }

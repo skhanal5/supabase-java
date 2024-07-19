@@ -33,7 +33,7 @@ public class InsertQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderMinimal() {
+    void testBuildAdditionalHeadersMinimal() {
         var insertQuery = new InsertQuery
                 .InsertQueryBuilder()
                 .from("foo")
@@ -47,7 +47,7 @@ public class InsertQueryTest {
     }
 
     @Test
-    void testAddSelectHeaderWithValues() {
+    void testBuildAdditionalHeadersWithValues() {
         var insertQuery = new InsertQueryBuilder()
                 .from("foo")
                 .insert(Map.of("bar", "baz"))
@@ -57,5 +57,31 @@ public class InsertQueryTest {
         var actualHeaders = insertQuery.buildAdditionalHeaders();
         Assertions.assertTrue(actualHeaders.isPresent());
         Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
+    }
+
+    @Test
+    void testBuildRequestBody() {
+        var insertQuery = new InsertQuery
+                .InsertQueryBuilder()
+                .from("foo")
+                .insert(Map.of("bar", "baz"))
+                .build();
+
+        var actualRequestBody = insertQuery.buildRequestBody();
+        var expectedRequestBody = List.of(Map.of("bar","baz"));
+        Assertions.assertTrue(actualRequestBody.isPresent());
+        Assertions.assertEquals(expectedRequestBody,actualRequestBody.get());
+    }
+
+    @Test
+    void testBuildQueryParams() {
+        var insertQuery = new InsertQuery
+                .InsertQueryBuilder()
+                .from("foo")
+                .insert(Map.of("bar", "baz"))
+                .build();
+
+        var actualQueryParams = insertQuery.buildQueryParams();
+        Assertions.assertTrue(actualQueryParams.isEmpty());
     }
 }

@@ -94,4 +94,19 @@ public class UpdateQueryTest {
         Assertions.assertTrue(actualHeaders.isPresent());
         Assertions.assertEquals(HeaderType.RETRIEVE_RESPONSE_VALUES, actualHeaders.get());
     }
+
+    @Test
+    void testBuildRequestBody() {
+        var updateQuery = new UpdateQueryBuilder()
+                .from("foo")
+                .update(Map.of("baz", "bar"))
+                .filter(new Filter.FilterBuilder().equals("baz", "bin").build())
+                .select()
+                .build();
+
+        var actualRequestBody = updateQuery.buildRequestBody();
+        var expectedRequestBody = List.of(Map.of("baz","bar"));
+        Assertions.assertTrue(actualRequestBody.isPresent());
+        Assertions.assertEquals(expectedRequestBody,actualRequestBody.get());
+    }
 }
