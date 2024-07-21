@@ -3,8 +3,6 @@ package com.skhanal5.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.skhanal5.core.internal.SupabaseHttpRequest;
-import com.skhanal5.core.internal.SupabaseHttpRequestSender;
 import com.skhanal5.models.DeleteQuery;
 import com.skhanal5.models.InsertQuery;
 import com.skhanal5.models.SelectQuery;

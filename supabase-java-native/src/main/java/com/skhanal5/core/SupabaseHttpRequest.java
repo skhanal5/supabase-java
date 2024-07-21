@@ -1,4 +1,4 @@
-package com.skhanal5.core.internal;
+package com.skhanal5.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import java.net.http.HttpRequest;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class SupabaseHttpRequest {
+class SupabaseHttpRequest {
 
     URI uri;
 
@@ -21,11 +21,11 @@ public class SupabaseHttpRequest {
 
     private static final ObjectMapper requestMapper = new ObjectMapper();
 
-    public SupabaseHttpRequest(String baseURI,
+    SupabaseHttpRequest(String baseURI,
                                Map<String,String> defaultHeaders,
                                Query query) {
-        this.uri = buildURI(baseURI, query.getTable(), queryParameters);
         this.queryParameters = query.buildQueryParams().orElse(Map.of());
+        this.uri = buildURI(baseURI, query.getTable(), queryParameters);
         this.requestBody = query.buildRequestBody().orElse(List.of());
         this.headers = mergeHeaders(defaultHeaders, query.buildAdditionalHeaders());
     }
@@ -35,8 +35,7 @@ public class SupabaseHttpRequest {
         headersToAdd.ifPresent(mergedHeaders::putAll);
         return mergedHeaders;
     }
-
-   public  HttpRequest buildRequest(String methodName) throws JsonProcessingException {
+    HttpRequest buildRequest(String methodName) throws JsonProcessingException {
         var requestBuilder = HttpRequest.newBuilder();
         headers.forEach(requestBuilder::setHeader);
         headers.put("Content-Type", "application/json"); //move this inside of the query's buildHeaders method as needed
@@ -52,14 +51,18 @@ public class SupabaseHttpRequest {
         return URI.create(fullURI);
     }
 
-    private static StringJoiner serializeQueryParameters(Map<String, String> queryParameters) {
+    private static String serializeQueryParameters(Map<String, String> queryParameters) {
+        if (queryParameters == null || queryParameters.isEmpty()) {
+            return "";
+        }
+
         StringJoiner stringifyPathParams = new StringJoiner("&");
         for (Entry<String, String> keyValuePair : queryParameters.entrySet()) {
             String currPathParam = keyValuePair.getKey() + "=" + encodeSpaces(keyValuePair.getValue());
             stringifyPathParams
                     .add(currPathParam);
         }
-        return stringifyPathParams;
+        return stringifyPathParams.toString();
     }
 
     private static String encodeSpaces(String URI) {

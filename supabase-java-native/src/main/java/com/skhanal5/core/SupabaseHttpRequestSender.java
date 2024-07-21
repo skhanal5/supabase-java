@@ -1,35 +1,29 @@
-package com.skhanal5.core.internal;
+package com.skhanal5.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skhanal5.models.Query;
+import com.skhanal5.core.SupabaseHttpRequest;
 
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 
-import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
-public class SupabaseHttpRequestSender {
+class SupabaseHttpRequestSender {
 
     HttpClient client;
 
     ObjectMapper mapper;
 
 
-    public SupabaseHttpRequestSender(HttpClient client,
+    SupabaseHttpRequestSender(HttpClient client,
                                      ObjectMapper mapper) {
         this.client = client;
         this.mapper = mapper;
     }
 
-    public <T> CompletableFuture<T> invokeRequest(String requestMethod, SupabaseHttpRequest request, Class<T> responseType) throws JsonProcessingException {
+    <T> CompletableFuture<T> invokeRequest(String requestMethod, SupabaseHttpRequest request, Class<T> responseType) throws JsonProcessingException {
         var httpRequest = request.buildRequest(requestMethod);
         return client
                 .sendAsync(httpRequest, BodyHandlers.ofString())
