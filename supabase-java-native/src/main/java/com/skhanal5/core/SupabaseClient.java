@@ -1,7 +1,9 @@
 package com.skhanal5.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.skhanal5.core.internal.SupabaseHttpRequest;
 import com.skhanal5.core.internal.SupabaseHttpRequestSender;
 import com.skhanal5.models.DeleteQuery;
 import com.skhanal5.models.InsertQuery;
@@ -26,21 +28,18 @@ import java.util.concurrent.ExecutionException;
  */
 public class SupabaseClient {
 
-    HttpClient client;
+    SupabaseHttpRequestSender sender;
 
     String baseURI;
-
-    ObjectMapper mapper;
 
     Map<String,String> defaultHeaders;
 
     private static final String ENDPOINT_PATH = "/rest/v1/";
 
     private SupabaseClient(HttpClient client, String baseURI, Map<String,String> defaultHeaders, ObjectMapper mapper) {
-        this.client = client;
+        this.sender = new SupabaseHttpRequestSender(client, mapper);
         this.baseURI = baseURI;
         this.defaultHeaders = defaultHeaders;
-        this.mapper = mapper;
     }
 
     /**
@@ -53,10 +52,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokeGETRequest().get();
-        } catch (InterruptedException | ExecutionException e) {
+            var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+            return sender.invokeRequest("GET", request, responseType).get();
+        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -74,10 +73,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokePOSTRequest().get();
-        } catch (InterruptedException | ExecutionException e) {
+            var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+            return sender.invokeRequest("POST", request, responseType).get();
+        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -95,10 +94,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokePATCHRequest().get();
-        } catch (InterruptedException | ExecutionException e) {
+            var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+            return sender.invokeRequest("PATCH", request, responseType).get();
+        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -116,10 +115,10 @@ public class SupabaseClient {
      * @param <T> the type of the expected response POJO
      */
     public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-        var sender = new SupabaseHttpRequestSender<>(baseURI, client, defaultHeaders, query, responseType, mapper);
         try {
-            return sender.invokeDELETERequest().get();
-        } catch (InterruptedException | ExecutionException e) {
+            var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+            return sender.invokeRequest("DELETE", request, responseType).get();
+        } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -133,7 +132,7 @@ public class SupabaseClient {
      * @return an instance of a SupabaseClient
      */
     public static SupabaseClient newInstance(@NonNull String databaseUrl, @NonNull String serviceKey) {
-       return newInstance(databaseUrl, serviceKey, new ObjectMapper());
+        return newInstance(databaseUrl, serviceKey, new ObjectMapper());
     }
 
     /**
