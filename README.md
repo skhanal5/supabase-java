@@ -5,8 +5,8 @@ This project establishes a Java based client to interact with a Supabase databas
 Java based library for its database, so I tried to make one instead.
 
 ### Supabase Java Native
-A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of 
-Apache HTTPClient to interact with the Supabase database API. 
+A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of
+Apache HTTPClient to interact with the Supabase database API.
 
 ### Supabase Java Spring
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
@@ -14,7 +14,28 @@ the hood to interact with the Supabase database API.
 
 ## Quick Start
 
-### Initialization
+### Importing Maven Dependency
+If you want to use the native Java client then include the following dependency in your POM file:
+
+```dtd
+<dependency>
+    <groupId>com.skhanal5</groupId>
+    <artifactId>supabase-java-native</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+For the Spring based client, use this dependency instead in your POM file:
+
+```dtd
+<dependency>
+  <groupId>com.skhanal5</groupId>
+  <artifactId>supabase-java-spring</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+### Client Initialization
 
 The easiest way of initalizing a SupabaseClient is by passing in the base URL of your Supabase database from your
 dashboard along with the service key.
