@@ -69,7 +69,7 @@
             <goals>
               <goal>check</goal>
             </goals>
-            <phase>compile</phase>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
