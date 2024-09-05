@@ -1,19 +1,17 @@
 package com.skhanal5.models;
 
-/**
- * Represents a Pagination instance.
- */
+/** Represents a Pagination instance. */
 class Pagination {
-    int start;
+  int start;
 
-    int end;
+  int end;
 
-    Pagination(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
+  Pagination(int start, int end) {
+    this.start = start;
+    this.end = end;
+  }
 
-    String serialize() {
-        return this.start + "-" + this.end;
-    }
+  String serialize() {
+    return this.start + "-" + this.end;
+  }
 }
