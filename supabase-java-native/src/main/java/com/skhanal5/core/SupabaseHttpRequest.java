@@ -27,13 +27,6 @@ class SupabaseHttpRequest {
     this.headers = mergeHeaders(defaultHeaders, query.buildAdditionalHeaders());
   }
 
-   static Map<String, String> mergeHeaders(
-      Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
-    var mergedHeaders = new HashMap<>(headers);
-    headersToAdd.ifPresent(mergedHeaders::putAll);
-    return mergedHeaders;
-  }
-
   HttpRequest buildRequest(String methodName) throws JsonProcessingException {
     var requestBuilder = HttpRequest.newBuilder();
     headers.put(
@@ -45,6 +38,13 @@ class SupabaseHttpRequest {
         .uri(uri)
         .method(methodName, HttpRequest.BodyPublishers.ofString(requestBodyToJsonString))
         .build();
+  }
+
+  static Map<String, String> mergeHeaders(
+          Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
+    var mergedHeaders = new HashMap<>(headers);
+    headersToAdd.ifPresent(mergedHeaders::putAll);
+    return mergedHeaders;
   }
 
   static URI buildURI(String baseURI, String path, Map<String, String> queryParameters) {

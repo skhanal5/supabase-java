@@ -125,8 +125,16 @@ class SupabaseHttpRequestTest {
     @ParameterizedTest
     @ValueSource(strings = {"nospaces", "one space", "multiple  spaces"
     })
-    public void testEncodeSpacesWithInputs(String testInput) {
+    public void testEncodeSpacesRemovesAllSpaces(String testInput) {
         var result = SupabaseHttpRequest.encodeSpaces(testInput);
         Assertions.assertFalse(result.contains(" "));
+    }
+
+    @Test
+    public void testEncodeSpacesReplacesSpaceCorrectly() {
+        var stringToEncode = "multiple  space";
+        var expectedEncodedResult = "multiple%20%20space";
+        var actualResult  = SupabaseHttpRequest.encodeSpaces(stringToEncode);
+        Assertions.assertEquals(expectedEncodedResult,actualResult);
     }
 }
