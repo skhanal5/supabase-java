@@ -13,8 +13,9 @@ class SupabaseHttpRequestSender {
 
   ObjectMapper mapper;
 
-  SupabaseHttpRequestSender(HttpClient client, ObjectMapper mapper) {
-    this.client = client;
+
+  SupabaseHttpRequestSender(ObjectMapper mapper) {
+    this.client = HttpClient.newHttpClient();
     this.mapper = mapper;
   }
 
