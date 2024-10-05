@@ -27,7 +27,7 @@ class SupabaseHttpRequestSender {
       String requestMethod, SupabaseHttpRequest request, Class<T> responseType)
       throws JsonProcessingException {
     var httpRequest = request.buildRequest(requestMethod);
-      return client
+    return client
         .sendAsync(httpRequest, BodyHandlers.ofString())
         .thenApply(this::validateStatusCode)
         .thenApply(e -> deserialize(e.body(), responseType));
@@ -39,7 +39,9 @@ class SupabaseHttpRequestSender {
     if (isStatusCodeValue) {
       return response;
     }
-    throw new RuntimeException("Received an invalid status code from the server: " + response.statusCode()); // replace with an actual exception
+    throw new RuntimeException(
+        "Received an invalid status code from the server: "
+            + response.statusCode()); // replace with an actual exception
   }
 
   <T> T deserialize(String responseBody, Class<T> responseType) {
