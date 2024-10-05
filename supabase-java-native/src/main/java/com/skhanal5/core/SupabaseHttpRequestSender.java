@@ -42,28 +42,6 @@ class SupabaseHttpRequestSender {
     throw new RuntimeException("Received an invalid status code from the server: " + response.statusCode()); // replace with an actual exception
   }
 
-//  <T> T deserializeIntoPOJO(HttpResponse<String> jsonResponse, Class<T> responseType) {
-//    if (jsonResponse.statusCode() >= 200 || jsonResponse.statusCode() < 300) {
-//      var jsonBody = jsonResponse.body();
-//
-//      if (jsonBody != null && jsonBody.length() > 1) {
-//        jsonBody = jsonBody.substring(1, jsonBody.length() - 1);
-//      }
-//
-//      if (responseType == String.class) {
-//        return responseType.cast(jsonBody);
-//      }
-//
-//      try {
-//        return this.mapper.readValue(jsonBody, responseType);
-//      } catch (JsonProcessingException e) {
-//        throw new RuntimeException(e);
-//      }
-//    }
-//    // TODO: Handle other status codes other than 200's
-//    return null;
-//  }
-
   <T> T deserialize(String responseBody, Class<T> responseType) {
     try {
       return this.mapper.readValue(responseBody, responseType);
