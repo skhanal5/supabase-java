@@ -3,7 +3,6 @@ package com.skhanal5.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skhanal5.models.*;
-
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import lombok.*;
@@ -30,18 +29,20 @@ public class SupabaseClient {
   private static final String ENDPOINT_PATH = "/rest/v1/";
 
   // correct usage of dependency injection
-  SupabaseClient(SupabaseHttpRequestSender sender, String baseURI, Map<String,String> defaultHeaders) {
+  SupabaseClient(
+      SupabaseHttpRequestSender sender, String baseURI, Map<String, String> defaultHeaders) {
     this.sender = sender;
     this.baseURI = baseURI;
     this.defaultHeaders = defaultHeaders;
   }
 
-//  private SupabaseClient(
-//      HttpClient client, String baseURI, Map<String, String> defaultHeaders, ObjectMapper mapper) {
-//    this.sender = new SupabaseHttpRequestSender(client, mapper);
-//    this.baseURI = baseURI;
-//    this.defaultHeaders = defaultHeaders;
-//  }
+  //  private SupabaseClient(
+  //      HttpClient client, String baseURI, Map<String, String> defaultHeaders, ObjectMapper
+  // mapper) {
+  //    this.sender = new SupabaseHttpRequestSender(client, mapper);
+  //    this.baseURI = baseURI;
+  //    this.defaultHeaders = defaultHeaders;
+  //  }
 
   /**
    * Executes a SelectQuery and returns the search response as a POJO of type responseType. The
@@ -53,12 +54,12 @@ public class SupabaseClient {
    * @param <T> the type of the expected response POJO
    */
   public <T> T executeSelect(SelectQuery query, Class<T> responseType) {
-//    try {
-//      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
-//      return sender.invokeRequest("GET", request, responseType).get();
-//    } catch (JsonProcessingException | InterruptedException | ExecutionException e) {
-//      throw new RuntimeException(e);
-//    }
+    //    try {
+    //      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+    //      return sender.invokeRequest("GET", request, responseType).get();
+    //    } catch (JsonProcessingException | InterruptedException | ExecutionException e) {
+    //      throw new RuntimeException(e);
+    //    }
     return this.execute(query, responseType, "GET");
   }
 
@@ -75,12 +76,12 @@ public class SupabaseClient {
    * @param <T> the type of the expected response POJO
    */
   public <T> T executeInsert(InsertQuery query, Class<T> responseType) {
-//    try {
-//      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
-//      return sender.invokeRequest("POST", request, responseType).get();
-//    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
-//      throw new RuntimeException(e);
-//    }
+    //    try {
+    //      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+    //      return sender.invokeRequest("POST", request, responseType).get();
+    //    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
+    //      throw new RuntimeException(e);
+    //    }
     return this.execute(query, responseType, "POST");
   }
 
@@ -97,12 +98,12 @@ public class SupabaseClient {
    * @param <T> the type of the expected response POJO
    */
   public <T> T executeUpdate(UpdateQuery query, Class<T> responseType) {
-//    try {
-//      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
-//      return sender.invokeRequest("PATCH", request, responseType).get();
-//    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
-//      throw new RuntimeException(e);
-//    }
+    //    try {
+    //      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+    //      return sender.invokeRequest("PATCH", request, responseType).get();
+    //    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
+    //      throw new RuntimeException(e);
+    //    }
 
     return this.execute(query, responseType, "PATCH");
   }
@@ -120,12 +121,12 @@ public class SupabaseClient {
    * @param <T> the type of the expected response POJO
    */
   public <T> T executeDelete(DeleteQuery query, Class<T> responseType) {
-//    try {
-//      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
-//      return sender.invokeRequest("DELETE", request, responseType).get();
-//    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
-//      throw new RuntimeException(e);
-//    }
+    //    try {
+    //      var request = new SupabaseHttpRequest(baseURI, defaultHeaders, query);
+    //      return sender.invokeRequest("DELETE", request, responseType).get();
+    //    } catch (InterruptedException | ExecutionException | JsonProcessingException e) {
+    //      throw new RuntimeException(e);
+    //    }
     return this.execute(query, responseType, "DELETE");
   }
 

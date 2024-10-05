@@ -30,8 +30,8 @@ class SupabaseHttpRequest {
   HttpRequest buildRequest(String methodName) throws JsonProcessingException {
     var requestBuilder = HttpRequest.newBuilder();
     headers.put(
-            "Content-Type",
-            "application/json"); // move this inside of the query's buildHeaders method as needed
+        "Content-Type",
+        "application/json"); // move this inside of the query's buildHeaders method as needed
     headers.forEach(requestBuilder::setHeader);
     String requestBodyToJsonString = requestMapper.writeValueAsString(requestBody);
     return requestBuilder
@@ -41,7 +41,7 @@ class SupabaseHttpRequest {
   }
 
   static Map<String, String> mergeHeaders(
-          Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
+      Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
     var mergedHeaders = new HashMap<>(headers);
     headersToAdd.ifPresent(mergedHeaders::putAll);
     return mergedHeaders;
