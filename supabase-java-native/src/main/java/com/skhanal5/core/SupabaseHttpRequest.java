@@ -27,19 +27,12 @@ class SupabaseHttpRequest {
     this.headers = mergeHeaders(defaultHeaders, query.buildAdditionalHeaders());
   }
 
-  private Map<String, String> mergeHeaders(
-      Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
-    var mergedHeaders = new HashMap<>(headers);
-    headersToAdd.ifPresent(mergedHeaders::putAll);
-    return mergedHeaders;
-  }
-
   HttpRequest buildRequest(String methodName) throws JsonProcessingException {
     var requestBuilder = HttpRequest.newBuilder();
-    headers.forEach(requestBuilder::setHeader);
     headers.put(
-        "Content-Type",
-        "application/json"); // move this inside of the query's buildHeaders method as needed
+            "Content-Type",
+            "application/json"); // move this inside of the query's buildHeaders method as needed
+    headers.forEach(requestBuilder::setHeader);
     String requestBodyToJsonString = requestMapper.writeValueAsString(requestBody);
     return requestBuilder
         .uri(uri)
@@ -47,12 +40,19 @@ class SupabaseHttpRequest {
         .build();
   }
 
-  private static URI buildURI(String baseURI, String path, Map<String, String> queryParameters) {
+  static Map<String, String> mergeHeaders(
+          Map<String, String> headers, Optional<Map<String, String>> headersToAdd) {
+    var mergedHeaders = new HashMap<>(headers);
+    headersToAdd.ifPresent(mergedHeaders::putAll);
+    return mergedHeaders;
+  }
+
+  static URI buildURI(String baseURI, String path, Map<String, String> queryParameters) {
     String fullURI = baseURI + path + "?" + serializeQueryParameters(queryParameters);
     return URI.create(fullURI);
   }
 
-  private static String serializeQueryParameters(Map<String, String> queryParameters) {
+  static String serializeQueryParameters(Map<String, String> queryParameters) {
     if (queryParameters == null || queryParameters.isEmpty()) {
       return "";
     }
@@ -65,7 +65,7 @@ class SupabaseHttpRequest {
     return stringifyPathParams.toString();
   }
 
-  private static String encodeSpaces(String URI) {
+  static String encodeSpaces(String URI) {
     return URI.replace(" ", "%20");
   }
 }
