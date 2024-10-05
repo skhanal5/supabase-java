@@ -36,13 +36,6 @@ public class SupabaseClient {
     this.defaultHeaders = defaultHeaders;
   }
 
-  //  private SupabaseClient(
-  //      HttpClient client, String baseURI, Map<String, String> defaultHeaders, ObjectMapper
-  // mapper) {
-  //    this.sender = new SupabaseHttpRequestSender(client, mapper);
-  //    this.baseURI = baseURI;
-  //    this.defaultHeaders = defaultHeaders;
-  //  }
 
   /**
    * Executes a SelectQuery and returns the search response as a POJO of type responseType. The
