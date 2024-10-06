@@ -36,7 +36,6 @@ public class SupabaseClient {
     this.defaultHeaders = defaultHeaders;
   }
 
-
   /**
    * Executes a SelectQuery and returns the search response as a POJO of type responseType. The
    * responseType class definition should match the schema of your table.

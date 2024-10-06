@@ -164,8 +164,7 @@ public class SupabaseClient {
         .block();
   }
 
-  Consumer<HttpHeaders> constructHttpHeaders(
-      Optional<Map<String, String>> additionalHeaders) {
+  Consumer<HttpHeaders> constructHttpHeaders(Optional<Map<String, String>> additionalHeaders) {
     MultiValueMap<String, String> headersToMap = toMultiValueMap(additionalHeaders);
     return headers -> headers.addAll(headersToMap);
   }
