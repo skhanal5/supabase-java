@@ -29,7 +29,7 @@ public class SupabaseClient {
 
   private static final String ENDPOINT_PATH = "/rest/v1/";
 
-  private SupabaseClient(WebClient client) {
+  SupabaseClient(WebClient client) {
     this.client = client;
   }
 
@@ -103,7 +103,7 @@ public class SupabaseClient {
     return this.makeDeleteAPICall(query.getTable(), headers, queryParams, responseType);
   }
 
-  private <T> T makeSelectAPICall(
+  <T> T makeSelectAPICall(
       String table,
       MultiValueMap<String, String> queryParameters,
       Consumer<HttpHeaders> headersConsumer,
@@ -117,7 +117,7 @@ public class SupabaseClient {
         .block();
   }
 
-  private <T> T makeInsertDBCall(
+  <T> T makeInsertDBCall(
       String table,
       List<Map<String, Object>> requestBody,
       Consumer<HttpHeaders> headersConsumer,
@@ -133,7 +133,7 @@ public class SupabaseClient {
         .block();
   }
 
-  private <T> T makeUpdateDBCall(
+  <T> T makeUpdateDBCall(
       String table,
       Consumer<HttpHeaders> headers,
       MultiValueMap<String, String> queryParameters,
@@ -150,7 +150,7 @@ public class SupabaseClient {
         .block();
   }
 
-  private <T> T makeDeleteAPICall(
+  <T> T makeDeleteAPICall(
       String table,
       Consumer<HttpHeaders> headers,
       MultiValueMap<String, String> queryParameters,
@@ -164,13 +164,13 @@ public class SupabaseClient {
         .block();
   }
 
-  private Consumer<HttpHeaders> constructHttpHeaders(
+  Consumer<HttpHeaders> constructHttpHeaders(
       Optional<Map<String, String>> additionalHeaders) {
     MultiValueMap<String, String> headersToMap = toMultiValueMap(additionalHeaders);
-    return bulkHeaders -> bulkHeaders.addAll(headersToMap);
+    return headers -> headers.addAll(headersToMap);
   }
 
-  private MultiValueMap<String, String> toMultiValueMap(Optional<Map<String, String>> map) {
+  MultiValueMap<String, String> toMultiValueMap(Optional<Map<String, String>> map) {
     MultiValueMap<String, String> remapped = new LinkedMultiValueMap<>();
     map.ifPresent(mapUnwrapped -> mapUnwrapped.forEach(remapped::add));
     return remapped;
