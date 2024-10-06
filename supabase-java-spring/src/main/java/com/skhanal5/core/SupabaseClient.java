@@ -103,7 +103,7 @@ public class SupabaseClient {
     return this.makeDeleteAPICall(query.getTable(), headers, queryParams, responseType);
   }
 
-  <T> T makeSelectAPICall(
+  private <T> T makeSelectAPICall(
       String table,
       MultiValueMap<String, String> queryParameters,
       Consumer<HttpHeaders> headersConsumer,
@@ -117,7 +117,7 @@ public class SupabaseClient {
         .block();
   }
 
-  <T> T makeInsertDBCall(
+  private <T> T makeInsertDBCall(
       String table,
       List<Map<String, Object>> requestBody,
       Consumer<HttpHeaders> headersConsumer,
@@ -133,7 +133,7 @@ public class SupabaseClient {
         .block();
   }
 
-  <T> T makeUpdateDBCall(
+  private <T> T makeUpdateDBCall(
       String table,
       Consumer<HttpHeaders> headers,
       MultiValueMap<String, String> queryParameters,
@@ -150,7 +150,7 @@ public class SupabaseClient {
         .block();
   }
 
-  <T> T makeDeleteAPICall(
+  private <T> T makeDeleteAPICall(
       String table,
       Consumer<HttpHeaders> headers,
       MultiValueMap<String, String> queryParameters,
