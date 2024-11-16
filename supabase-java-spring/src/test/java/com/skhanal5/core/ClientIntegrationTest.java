@@ -12,7 +12,7 @@ public class ClientIntegrationTest {
 
   private static MockServer mockServer;
 
-  private static String baseUrl = "http://localhost:8080";
+  private static final String baseUrl = "http://localhost:8080";
 
   @BeforeAll
   public static void setupServer() {

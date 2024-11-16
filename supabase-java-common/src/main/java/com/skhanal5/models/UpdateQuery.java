@@ -61,10 +61,10 @@ public class UpdateQuery implements Query {
     }
 
     /**
-     * Used to specify the values we want to insert into the table.
+     * Used to specify the values we want to update into the table.
      *
      * @param value a list of Map<String,Object> where each Map represents a row that we want to
-     *     insert. The key is the column name and the value is its corresponding value in the type
+     *     update. The key is the column name and the value is its corresponding value in the type
      *     that the column accepts.
      * @return a UpdateQueryBuilder with this configured
      */

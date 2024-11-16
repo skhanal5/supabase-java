@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class MockServer {
 
-  private WireMockServer mockServer;
+  private final WireMockServer mockServer;
 
   public MockServer() {
     this.mockServer = new WireMockServer(options().port(8080));
