@@ -6,7 +6,7 @@ Java based library for its database, so I tried to make one instead.
 
 ### Supabase Java Native
 A Supabase client library written in vanilla Java. It contains minimal dependencies to external libraries and makes use of
-Apache HTTPClient to interact with the Supabase database API.
+Java's HttpClient to interact with the Supabase database API.
 
 ### Supabase Java Spring
 A Supabase client that is native to the Spring 3 framework. It uses WebClient under
@@ -37,7 +37,7 @@ For the Spring based client, use this dependency instead in your POM file:
 
 ### Client Initialization
 
-The easiest way of initalizing a SupabaseClient is by passing in the base URL of your Supabase database from your
+The easiest way of initializing a SupabaseClient is passing in the base URL of your Supabase database from your
 dashboard along with the service key.
 
 ```dtd
@@ -77,7 +77,7 @@ To insert a row or multiple rows into the table, you can use the `InsertQuery`.
         .build();
 ```
 
-Note: this method will return an empty string if you do not invoke select(). If select is invoked, it will
+Note: Executing this query will return null if you do not invoke `select()`. If select is invoked, it will
 return the new row/rows inserted in the table.
 
 #### UpdateQuery
@@ -100,7 +100,7 @@ filtering, view the [section on using Filters](#Filters).
         .build();
 ```
 
-Note: this method will return an empty string if you do not invoke select(). If select is invoked, it will
+Note: Executing this query will return null if you do not invoke `select()`. If select is invoked, it will
 return the updated row in the table.
 
 #### DeleteQuery
@@ -122,7 +122,7 @@ If you want to delete a specific row (or rows), you can use the `DeleteQuery` al
         .build();
 ```
 
-Note: If you do not invoke the `select()` method, you will not get a response back from doing this operation. Invoking it returns the deleted row(s).
+Note: If you do not invoke the `select()` method, you will not get a response back from executing this query. Invoking it returns the deleted row(s).
 
 ### Executing a Query
 

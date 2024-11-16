@@ -23,13 +23,13 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @see #newInstance(String, String) Using the database url and service key
  */
-public class SupabaseClient {
+public class SpringSupabaseClient {
 
   @NonNull WebClient client;
 
   private static final String ENDPOINT_PATH = "/rest/v1/";
 
-  private SupabaseClient(WebClient client) {
+  SpringSupabaseClient(WebClient client) {
     this.client = client;
   }
 
@@ -164,13 +164,12 @@ public class SupabaseClient {
         .block();
   }
 
-  private Consumer<HttpHeaders> constructHttpHeaders(
-      Optional<Map<String, String>> additionalHeaders) {
+  Consumer<HttpHeaders> constructHttpHeaders(Optional<Map<String, String>> additionalHeaders) {
     MultiValueMap<String, String> headersToMap = toMultiValueMap(additionalHeaders);
-    return bulkHeaders -> bulkHeaders.addAll(headersToMap);
+    return headers -> headers.addAll(headersToMap);
   }
 
-  private MultiValueMap<String, String> toMultiValueMap(Optional<Map<String, String>> map) {
+  MultiValueMap<String, String> toMultiValueMap(Optional<Map<String, String>> map) {
     MultiValueMap<String, String> remapped = new LinkedMultiValueMap<>();
     map.ifPresent(mapUnwrapped -> mapUnwrapped.forEach(remapped::add));
     return remapped;
@@ -185,7 +184,7 @@ public class SupabaseClient {
    *     exposed to clients.
    * @return an instance of a SupabaseClient
    */
-  public static SupabaseClient newInstance(
+  public static SpringSupabaseClient newInstance(
       @NonNull String databaseUrl, @NonNull String serviceKey) {
     var baseUrl = databaseUrl + ENDPOINT_PATH;
     var client =
@@ -195,6 +194,6 @@ public class SupabaseClient {
             .defaultHeader("Authorization", "Bearer " + serviceKey)
             .build();
 
-    return new SupabaseClient(client);
+    return new SpringSupabaseClient(client);
   }
 }
