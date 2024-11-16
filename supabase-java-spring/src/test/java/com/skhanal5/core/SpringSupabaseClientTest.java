@@ -1,5 +1,7 @@
 package com.skhanal5.core;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,18 +15,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-
 public class SpringSupabaseClientTest {
 
   @Test
   void testNewInstanceWithNullDatabaseURL() {
-    Assertions.assertThrows(NullPointerException.class, () -> SpringSupabaseClient.newInstance(null, ""));
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SpringSupabaseClient.newInstance(null, ""));
   }
 
   @Test
   void testNewInstanceWithNullServiceKey() {
-    Assertions.assertThrows(NullPointerException.class, () -> SpringSupabaseClient.newInstance("", null));
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SpringSupabaseClient.newInstance("", null));
   }
 
   @Test
