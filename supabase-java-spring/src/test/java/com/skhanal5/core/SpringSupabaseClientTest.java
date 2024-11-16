@@ -1,7 +1,6 @@
 package com.skhanal5.core;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
@@ -16,23 +15,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class SupabaseClientTest {
+public class SpringSupabaseClientTest {
 
   @Test
   void testNewInstanceWithNullDatabaseURL() {
-    Assertions.assertThrows(NullPointerException.class, () -> SupabaseClient.newInstance(null, ""));
+    Assertions.assertThrows(NullPointerException.class, () -> SpringSupabaseClient.newInstance(null, ""));
   }
 
   @Test
   void testNewInstanceWithNullServiceKey() {
-    Assertions.assertThrows(NullPointerException.class, () -> SupabaseClient.newInstance("", null));
+    Assertions.assertThrows(NullPointerException.class, () -> SpringSupabaseClient.newInstance("", null));
   }
 
   @Test
   void testNewInstanceSetsWebClient() {
     var url = "";
     var key = "";
-    var supabaseClient = SupabaseClient.newInstance(url, key);
+    var supabaseClient = SpringSupabaseClient.newInstance(url, key);
     Assertions.assertNotNull(supabaseClient.client);
   }
 
@@ -55,7 +54,7 @@ public class SupabaseClientTest {
   @MethodSource("provideInputAndExpectedResult")
   void testToMultiLevel(
       Optional<Map<String, String>> input, MultiValueMap<String, String> expectedResult) {
-    var client = SupabaseClient.newInstance("", "");
+    var client = SpringSupabaseClient.newInstance("", "");
     var result = client.toMultiValueMap(input);
     Assertions.assertEquals(expectedResult, result);
   }
@@ -64,7 +63,7 @@ public class SupabaseClientTest {
   @MethodSource("provideInputAndExpectedResult")
   void testConstructHttpHeaders(
       Optional<Map<String, String>> input, MultiValueMap<String, String> expectedResult) {
-    var client = SupabaseClient.newInstance("", "");
+    var client = SpringSupabaseClient.newInstance("", "");
     var consumer = client.constructHttpHeaders(input);
     var emptyHeaders = new HttpHeaders(new LinkedMultiValueMap<>());
     consumer.accept(emptyHeaders);

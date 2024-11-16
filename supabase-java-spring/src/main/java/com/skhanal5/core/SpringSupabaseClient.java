@@ -23,13 +23,13 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @see #newInstance(String, String) Using the database url and service key
  */
-public class SupabaseClient {
+public class SpringSupabaseClient {
 
   @NonNull WebClient client;
 
   private static final String ENDPOINT_PATH = "/rest/v1/";
 
-  SupabaseClient(WebClient client) {
+  SpringSupabaseClient(WebClient client) {
     this.client = client;
   }
 
@@ -184,7 +184,7 @@ public class SupabaseClient {
    *     exposed to clients.
    * @return an instance of a SupabaseClient
    */
-  public static SupabaseClient newInstance(
+  public static SpringSupabaseClient newInstance(
       @NonNull String databaseUrl, @NonNull String serviceKey) {
     var baseUrl = databaseUrl + ENDPOINT_PATH;
     var client =
@@ -194,6 +194,6 @@ public class SupabaseClient {
             .defaultHeader("Authorization", "Bearer " + serviceKey)
             .build();
 
-    return new SupabaseClient(client);
+    return new SpringSupabaseClient(client);
   }
 }
