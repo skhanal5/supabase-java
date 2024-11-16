@@ -77,7 +77,7 @@ To insert a row or multiple rows into the table, you can use the `InsertQuery`.
         .build();
 ```
 
-Note: this method will return null if you do not invoke `select()`. If select is invoked, it will
+Note: Executing this query will return null if you do not invoke `select()`. If select is invoked, it will
 return the new row/rows inserted in the table.
 
 #### UpdateQuery
@@ -100,7 +100,7 @@ filtering, view the [section on using Filters](#Filters).
         .build();
 ```
 
-Note: this method will return null if you do not invoke `select()`. If select is invoked, it will
+Note: Executing this query will return null if you do not invoke `select()`. If select is invoked, it will
 return the updated row in the table.
 
 #### DeleteQuery
@@ -122,7 +122,7 @@ If you want to delete a specific row (or rows), you can use the `DeleteQuery` al
         .build();
 ```
 
-Note: If you do not invoke the `select()` method, you will not get a response back from doing this operation. Invoking it returns the deleted row(s).
+Note: If you do not invoke the `select()` method, you will not get a response back from executing this query. Invoking it returns the deleted row(s).
 
 ### Executing a Query
 
